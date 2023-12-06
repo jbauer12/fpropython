@@ -7,3 +7,6 @@ initial_game_board = [
     [" ", "G", " ", "G", " ", "G", " ", "G"],
     ["G", " ", "G", " ", "G", " ", "G", " "],
     [" ", "G", " ", "G", " ", "G", " ", "G"]]
+
+def get_initial_game_board():
+    return initial_game_board

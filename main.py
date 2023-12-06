@@ -1,6 +1,7 @@
 import sys
 from itertools import combinations
 from gui import *
+from rules import get_initial_game_board
 
 
 
@@ -61,7 +62,7 @@ def move(grid, piecePosition, newPosition):
 
 
 def main(WIDTH, ROWS):
-    grid = make_grid(ROWS, WIDTH)
+    grid = make_grid(get_initial_game_board())
     highlightedPiece = None
     currMove = 'G'
 

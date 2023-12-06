@@ -28,11 +28,6 @@ Was brauche ich?
 -  ..... 
 
 """
-
-
-
-
-
 class Node:
     def __init__(self, row, col, width):
         self.row = row
@@ -47,41 +42,6 @@ class Node:
         if self.piece:
             WIN.blit(self.piece.image, (self.x, self.y))
 
-
-def update_display(win, grid, rows, width):
-    for row in grid:
-        for spot in row:
-            spot.draw(win)
-    draw_grid(win, rows, width)
-    pygame.display.update()
-
-
-def make_grid(rows, width):
-    grid = []
-    gap = width// rows
-    count = 0
-    for i in range(rows):
-        grid.append([])
-        for j in range(rows):
-            node = Node(j,i, gap)
-            if abs(i-j) % 2 == 0:
-                node.colour=BLACK
-            if (abs(i+j)%2==0) and (i<3):
-                node.piece = Piece('R')
-            elif(abs(i+j)%2==0) and i>4:
-                node.piece=Piece('G')
-            count+=1
-            grid[i].append(node)
-    return grid
-
-
-def draw_grid(win, rows, width):
-    gap = width // ROWS
-    for i in range(rows):
-        pygame.draw.line(win, BLACK, (0, i * gap), (width, i * gap))
-        for j in range(rows):
-            pygame.draw.line(win, BLACK, (j * gap, 0), (j * gap, width))
-
 class Piece:
     def __init__(self, team):
         self.team=team
@@ -90,6 +50,51 @@ class Piece:
 
     def draw(self, x, y):
         WIN.blit(self.image, (x,y))
+
+
+def convert_array_to_printable_grid(array):
+    grid = []
+    for i in range(8):
+        grid.append([])
+        for j in range(8):
+            node = Node(j,i, WIDTH / ROWS)
+            node.colour = BLACK if abs(i - j) % 2 == 0 else WHITE
+            grid[i].append(node)
+            if array[i][j] == 'R':
+                grid[i][j].piece = Piece('R')
+            elif array[i][j] == 'G':
+                grid[i][j].piece = Piece('G')
+    return grid
+
+def convert_printable_grid_to_array(grid):
+    array = []
+    for i in range(8):
+        array.append([])
+        for j in range(8):
+            if grid[i][j].piece:
+                array[i].append(grid[i][j].piece.team)
+            else:
+                array[i].append(" ")
+    return array
+
+
+
+
+
+def update_display(win, grid):
+    for row in grid:
+        for node in row:
+            node.draw(win)
+    pygame.display.update()
+
+
+
+
+def make_grid(game_board):
+    return convert_array_to_printable_grid(game_board)
+
+
+
 
 def getNode(grid, rows, width):
     gap = width//rows

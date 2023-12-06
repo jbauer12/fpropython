@@ -1,108 +1,8 @@
-import pygame
 import sys
 from itertools import combinations
+from gui import *
 
 
-WIDTH = 800
-ROWS = 8
-RED= pygame.image.load('./graphics/red_new.png')
-GREEN= pygame.image.load('./graphics/green.png')
-REDKING = pygame.image.load('./graphics/red.png')
-GREENKING = pygame.image.load('./graphics/green.png')
-WHITE = (255,255,255)
-BLACK = (0,0,0)
-ORANGE = (235, 168, 52)
-BLUE = (76, 252, 241)
-
-pygame.init()
-WIN = pygame.display.set_mode((WIDTH,WIDTH))
-pygame.display.set_caption('Checkers')
-
-priorMoves=[]
-class Node:
-    def __init__(self, row, col, width):
-        self.row = row
-        self.col = col
-        self.x = int(row * width)
-        self.y = int(col * width)
-        self.colour = WHITE
-        self.piece = None 
-
-    def(self, WIN):
-        pygame.draw.rect(WIN, self.colour, (self.x, self.y, WIDTH / ROWS, WIDTH / ROWS))
-        if self.piece:
-            WIN.blit(self.piece.image, (self.x, self.y))
-
-
-def update_display(win, grid, rows, width):
-    for row in grid:
-        for spot in row:
-            spot.draw(win)
-    draw_grid(win, rows, width)
-    pygame.display.update()
-
-
-def make_grid(rows, width):
-    grid = []
-    gap = width// rows
-    count = 0
-    for row in range(rows):
-        grid.append([])
-        for column in range(rows):
-            node = Node(column,row, gap)
-            if abs(row-column) % 2 == 0:
-                node.colour=BLACK
-            if (abs(row+column)%2==0) and (row<3):
-                node.piece = Piece('R')
-            elif(abs(row+column)%2==0) and row>4:
-                node.piece=Piece('G')
-            count+=1
-            grid[row].append(node)
-    return grid
-
-
-def draw_grid(win, rows, width):
-    gap = width // ROWS
-    for i in range(rows):
-        pygame.draw.line(win, BLACK, (0, i * gap), (width, i * gap))
-        for j in range(rows):
-            pygame.draw.line(win, BLACK, (j * gap, 0), (j * gap, width))
-
-
-class Piece:
-    def __init__(self, team):
-        self.team=team
-        self.image= RED if self.team=='R' else GREEN
-        self.type=None
-
-    def draw(self, x, y):
-        WIN.blit(self.image, (x,y))
-
-
-def getNode(grid, rows, width):
-    gap = width//rows
-    RowX,RowY = pygame.mouse.get_pos()
-    Row = RowX//gap
-    Col = RowY//gap
-    return (Col,Row)
-
-
-def resetColours(grid, node):
-    positions = generatePotentialMoves(node, grid)
-    positions.append(node)
-
-    for colouredNodes in positions:
-        nodeX, nodeY = colouredNodes
-        grid[nodeX][nodeY].colour = BLACK if abs(nodeX - nodeY) % 2 == 0 else WHITE
-
-def HighlightpotentialMoves(piecePosition, grid):
-    positions = generatePotentialMoves(piecePosition, grid)
-    for position in positions:
-        Column,Row = position
-        grid[Column][Row].colour=BLUE
-
-def opposite(team):
-    return "R" if team=="G" else "G"
 
 def generatePotentialMoves(nodePosition, grid):
     checker = lambda x,y: x+y>=0 and x+y<8
@@ -128,19 +28,17 @@ def generatePotentialMoves(nodePosition, grid):
     return positions
 
 
-"""
-Error with locating opssible moves row col error
-"""
+
 def highlight(ClickedNode, Grid, OldHighlight):
     Column,Row = ClickedNode
     Grid[Column][Row].colour=ORANGE
     if OldHighlight:
-        resetColours(Grid, OldHighlight)
-    HighlightpotentialMoves(ClickedNode, Grid)
+        resetColours(Grid, OldHighlight, generatePotentialMoves=generatePotentialMoves)
+    HighlightpotentialMoves(ClickedNode, Grid, generatePotentialMoves)
     return (Column,Row)
 
 def move(grid, piecePosition, newPosition):
-    resetColours(grid, piecePosition)
+    resetColours(grid, piecePosition, generatePotentialMoves)
     newColumn, newRow = newPosition
     oldColumn, oldRow = piecePosition
 
@@ -181,7 +79,7 @@ def main(WIDTH, ROWS):
                     if highlightedPiece:
                         pieceColumn, pieceRow = highlightedPiece
                     if currMove == grid[pieceColumn][pieceRow].piece.team:
-                        resetColours(grid, highlightedPiece)
+                        resetColours(grid, highlightedPiece, generatePotentialMoves)
                         currMove=move(grid, highlightedPiece, clickedNode)
                 elif highlightedPiece == clickedNode:
                     pass

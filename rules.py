@@ -46,4 +46,3 @@ def make_move(game_board: TYPE_GAMEBOARD, newPosition: Tuple[int, int], oldPosit
 
 
 
-make_move(get_initial_game_board(), 3, 1, 2, 2)

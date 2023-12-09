@@ -1,27 +1,35 @@
-from typing import List, Tuple, Callable
+from typing import List, Tuple, Callable, Generator
 
 GREEN_TEAM = ("G", "GK")
 RED_TEAM = ("R", "RK")
-TYPE_GAMEBOARD = Tuple[
-    Tuple[str, str, str, str, str, str, str, str],
-    Tuple[str, str, str, str, str, str, str, str],
-    Tuple[str, str, str, str, str, str, str, str],
-    Tuple[str, str, str, str, str, str, str, str],
-    Tuple[str, str, str, str, str, str, str, str],
-    Tuple[str, str, str, str, str, str, str, str],
-    Tuple[str, str, str, str, str, str, str, str],
-    Tuple[str, str, str, str, str, str, str, str]
-]
+TYPE_GAMEBOARD = Tuple[Tuple[str, ...], ...]
 def get_initial_game_board() -> TYPE_GAMEBOARD:
     return (
         ("R", " ", "R", " ", "R", " ", "R", " "),
         (" ", "R", " ", "R", " ", "R", " ", "R"),
         ("R", " ", "R", " ", "R", " ", "R", " "),
-        (" ", " ", " ", "G", " ", "", " ", " "),
+        (" ", " ", " ", "GK", " ", "", " ", " "),
         (" ", " ", " ", " ", " ", " ", " ", " "),
         (" ", "G", " ", "G", " ", "G", " ", "G"),
         ("G", " ", "G", " ", "G", " ", "G", " "),
         (" ", "G", " ", "G", " ", "G", " ", "G"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def get_possible_move_vectors(game_board: TYPE_GAMEBOARD, row: int, column: int, red_team: Callable, is_piece_there: Callable) -> List[Tuple[int, int]]:
@@ -50,7 +58,7 @@ def get_possible_moves_without_smash(game_board: TYPE_GAMEBOARD, nodePosition: T
             game_board, position[0], position[1]),
         positions_within_bound
     )
-    return bounded_positions_without_piece_on_it
+    return list(bounded_positions_without_piece_on_it)
 
 
 def get_possible_smash_moves(game_board: TYPE_GAMEBOARD, nodePosition: Tuple[int, int],
@@ -73,7 +81,7 @@ def get_possible_smash_moves(game_board: TYPE_GAMEBOARD, nodePosition: Tuple[int
 
     possible_smash_positions = filter(
         checker, unfiltered_possible_positions_smash)
-    return possible_smash_positions
+    return list(possible_smash_positions)
 
 def red_team(game_board: TYPE_GAMEBOARD, row, column) -> bool:
     return game_board[row][column] in RED_TEAM

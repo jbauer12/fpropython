@@ -1,6 +1,6 @@
 import pygame
 from typing import List, Tuple
-from possible_moves import TYPE_GAMEBOARD
+from possible_moves import TYPE_GAMEBOARD, get_initial_game_board
 
 WIDTH = 800
 ROWS = 8
@@ -76,8 +76,12 @@ def convert_array_to_printable_grid(array: List[List[str]]) -> List[List[Node]]:
 
 
 def convert_printable_grid_to_array(grid: List[List[Node]]) -> TYPE_GAMEBOARD:
-    array= tuple(tuple(node.piece.team +"K" if node.piece and node.piece.type == "KING" \
-                   else node.piece.team if node.piece else " ") for row in grid for node in row)
+    array: TYPE_GAMEBOARD = tuple(
+        tuple(str(node.piece.team + "K") if node.piece and node.piece.type == "KING" \
+              else str(node.piece.team) if node.piece else str(" ")
+              for node in row)
+        for row in grid
+    )
     return array
 
 
@@ -121,3 +125,7 @@ def HighlightpotentialMoves(piecePosition, grid, generatePotentialMoves):
 
 def opposite(team):
     return "R" if team == "G" else "G"
+
+
+convert_array_to_printable_grid(get_initial_game_board())
+convert_printable_grid_to_array(convert_array_to_printable_grid(get_initial_game_board()))

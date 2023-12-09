@@ -1,7 +1,7 @@
 import sys
 from itertools import combinations
 from gui import *
-from rules import get_initial_game_board
+import possible_moves as possible_moves
 
 
 
@@ -62,7 +62,7 @@ def move(grid, piecePosition, newPosition):
 
 
 def main(WIDTH, ROWS):
-    grid = make_grid(get_initial_game_board())
+    grid = make_grid(possible_moves.get_initial_game_board())
     highlightedPiece = None
     currMove = 'G'
 
@@ -90,7 +90,7 @@ def main(WIDTH, ROWS):
                             highlightedPiece = highlight(clickedNode, grid, highlightedPiece)
 
 
-        update_display(WIN, grid,ROWS,WIDTH)
+        update_display(grid)
 
 
 main(WIDTH, ROWS)

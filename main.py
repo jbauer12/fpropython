@@ -2,50 +2,21 @@ import sys
 from itertools import combinations
 from gui import *
 import possible_moves as possible_moves
+from rules import make_move
 
 
-
-def generatePotentialMoves(nodePosition, grid):
-    checker = lambda x,y: x+y>=0 and x+y<8
-    positions= []
-    column, row = nodePosition
-    if grid[column][row].piece:
-        vectors = [[1, -1], [1, 1]] if grid[column][row].piece.team == "R" else [[-1, -1], [-1, 1]]
-        if grid[column][row].piece.type=='KING':
-            vectors = [[1, -1], [1, 1],[-1, -1], [-1, 1]]
-        for vector in vectors:
-            columnVector, rowVector = vector
-            if checker(columnVector,column) and checker(rowVector,row):
-                #grid[(column+columnVector)][(row+rowVector)].colour=ORANGE
-                if not grid[(column+columnVector)][(row+rowVector)].piece:
-                    positions.append((column + columnVector, row + rowVector))
-                elif grid[column+columnVector][row+rowVector].piece and\
-                        grid[column+columnVector][row+rowVector].piece.team==opposite(grid[column][row].piece.team):
-
-                    if checker((2* columnVector), column) and checker((2* rowVector), row) \
-                            and not grid[(2* columnVector)+ column][(2* rowVector) + row].piece:
-                        positions.append((2* columnVector+ column,2* rowVector+ row ))
-
-    return positions
-
-
-
+#passt
 def highlight(ClickedNode, Grid, OldHighlight):
     Column,Row = ClickedNode
     Grid[Column][Row].colour=ORANGE
     if OldHighlight:
-        resetColours(Grid, OldHighlight, generatePotentialMoves=generatePotentialMoves)
-    HighlightpotentialMoves(ClickedNode, Grid, generatePotentialMoves)
+        resetColours(Grid, OldHighlight, generatePotentialMoves=possible_moves.get_all_possible_moves)
+    HighlightpotentialMoves(ClickedNode, Grid, possible_moves.get_all_possible_moves)
     return (Column,Row)
 
 def move(grid, piecePosition, newPosition):
-    resetColours(grid, piecePosition, generatePotentialMoves)
-    newColumn, newRow = newPosition
-    oldColumn, oldRow = piecePosition
-
-    piece = grid[oldColumn][oldRow].piece
-    grid[newColumn][newRow].piece=piece
-    grid[oldColumn][oldRow].piece = None
+    resetColours(grid, piecePosition, possible_moves.get_all_possible_moves)
+    make_move(convert_printable_grid_to_array(grid), newPosition, piecePosition)
 
     if newColumn==7 and grid[newColumn][newRow].piece.team=='R':
         grid[newColumn][newRow].piece.type='KING'
@@ -80,7 +51,7 @@ def main(WIDTH, ROWS):
                     if highlightedPiece:
                         pieceColumn, pieceRow = highlightedPiece
                     if currMove == grid[pieceColumn][pieceRow].piece.team:
-                        resetColours(grid, highlightedPiece, generatePotentialMoves)
+                        resetColours(grid, highlightedPiece, possible_moves.get_all_possible_moves)
                         currMove=move(grid, highlightedPiece, clickedNode)
                 elif highlightedPiece == clickedNode:
                     pass

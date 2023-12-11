@@ -1,48 +1,63 @@
 from typing import List, Tuple, Callable
-from possible_moves import get_all_possible_moves, get_initial_game_board, TYPE_GAMEBOARD, red_team
+from possible_moves import get_all_possible_moves, TYPE_GAMEBOARD
+from classes import Piece	
 
 
-def modify_game_board(game_board):
-    def modify_tuple_element(element):
-        return element.upper()
-
-    def modify_game_board_row(row):
-        return tuple(map(modify_tuple_element, row))
-    
-    return tuple(map(modify_game_board_row, game_board))
+def opposite(piece: Piece):
+    return "R" if piece.team == "G" else "G"
 
 
-# Example usage:
-initial_game_board: TYPE_GAMEBOARD = (
-    ("R", " ", "R", " ", "R", " ", "R", " "),
-    (" ", "R", " ", "R", " ", "R", " ", "R"),
-    ("R", " ", "R", " ", "R", " ", "R", " "),
-    (" ", " ", " ", "G", " ", "", " ", " "),
-    (" ", " ", " ", " ", " ", " ", " ", " "),
-    (" ", "G", " ", "G", " ", "G", " ", "G"),
-    ("G", " ", "G", " ", "G", " ", "G", " "),
-    (" ", "G", " ", "G", " ", "G", " ", "G")
-)
-
-
-
-def make_move(game_board: TYPE_GAMEBOARD, newPosition: Tuple[int, int], oldPosition: Tuple[int, int]):
-    row,column = newPosition
-    oldrow, oldcolumn = oldPosition
+def make_move(game_board: TYPE_GAMEBOARD, newPosition: Tuple[int, int], piece:Piece) -> Tuple[str, TYPE_GAMEBOARD]:
+    row, column = newPosition
     moves = get_all_possible_moves(
-        game_board=game_board, nodePosition=(oldrow, oldcolumn ))
-    red = red_team(game_board, oldrow, oldcolumn)
-    char_to_write = "R" if red else "G"
+        game_board=game_board, piece=game_board[piece.position[0]][piece.position[1]])
+
+
+
+    def nextPlayer(smash: bool, piece: Piece):
+        team = "R" if piece.team =="R" else "G"
+        return team if smash else opposite(
+            game_board[piece.position[0]][piece.position[1]])
 
     if (row, column) in moves:
-        new_game_board = tuple(
-            tuple(char_to_write if i == row and j == column 
-                  else " " if i ==oldrow and j == oldcolumn else col for j, col in enumerate(r))
-            for i, r in enumerate(game_board))
-        
-        return new_game_board
+        smash = is_opposite_piece_smashed(piece=piece, newPosition=newPosition)
+        game_board_after_move = place_piece_on_new_position(game_board=game_board, piece=piece,
+                                                            newPosition=newPosition, smash=smash)
+        return (nextPlayer(smash, piece), game_board_after_move)
     else:
-        return game_board
+        return (nextPlayer(False, piece), game_board)
 
+
+def place_piece_on_new_position(game_board: TYPE_GAMEBOARD, piece: Piece,
+                                newPosition: Tuple[int, int],  smash: bool ):
+    row, column = newPosition
+    oldrow, oldcolumn = piece.position
+
+    def delete_piece_team(row_index, col_index, oldrow, oldcolumn):
+        because_piece_moved = True if (
+            row_index == oldrow and col_index == oldcolumn) else False
+        because_piece_smashed = True if smash and (row_index == int(
+            (oldrow+row)/2) and col_index == int((oldcolumn+column)/2)) else False
+        return because_piece_moved or because_piece_smashed
+
+    return tuple(
+        tuple(Piece(position=newPosition, team=piece.team, king=is_piece_checker_after_move(piece, newPosition=newPosition)) if i == row and j == column
+              else Piece(position=newPosition, team=" ", king=False) if (delete_piece_team(i, j, oldrow, oldcolumn)) else col for j, col in enumerate(r))
+        for i, r in enumerate(game_board))
+
+
+def is_opposite_piece_smashed(piece:Piece, newPosition: Tuple[int, int]) -> bool:
+    row, column = newPosition
+    oldrow, oldcolumn = piece.position
+    if abs(row-oldrow) == 2 or abs(column-oldcolumn) == 2:
+        return True
+    return False
+
+
+def is_piece_checker_after_move(piece: Piece, newPosition: Tuple[int, int]) -> bool:
+    row, column = newPosition
+    if (piece.team == "R" and row == 7) or (piece.team == "G" and row == 0) or piece.king:
+        return True
+    else: return False
 
 

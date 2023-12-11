@@ -19,11 +19,10 @@ def highlight(ClickedNode, Grid, OldHighlight):
 
 def move(grid, piecePosition, newPosition):
     resetColours(grid, piecePosition, possible_moves.get_all_possible_moves)
-    new_game_board = make_move(convert_printable_grid_to_array(
-        grid), newPosition, piecePosition)
+    game_board = convert_printable_grid_to_array(grid)
+    next_player, new_game_board = make_move(game_board=game_board, newPosition=newPosition, piece=game_board[piecePosition[0]][piecePosition[1]])
     grid = make_grid(new_game_board)
-
-    return grid, opposite(grid[newPosition[0]][newPosition[1]].piece.team)
+    return grid, next_player
 
 
 def main(WIDTH, ROWS):

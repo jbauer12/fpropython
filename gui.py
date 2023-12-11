@@ -1,6 +1,7 @@
 import pygame
 from typing import List, Tuple
 from possible_moves import TYPE_GAMEBOARD, get_initial_game_board
+from classes import Piece as logicPiece
 
 WIDTH = 800
 ROWS = 8
@@ -8,8 +9,8 @@ ROWS = 8
 RED = pygame.image.load('./static/red_new.png')
 GREEN = pygame.image.load('./static/green.png')
 
-REDKING = pygame.image.load('./static/green.png')
-GREENKING = pygame.image.load('./static/green.png')
+REDKING = pygame.image.load('./static/red_dame.png')
+GREENKING = pygame.image.load('./static/green_dame.png')
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -20,12 +21,6 @@ WIN = pygame.display.set_mode((WIDTH, WIDTH))
 pygame.display.set_caption('Checkers')
 
 
-"""
-Was brauche ich? 
-- Map Funktion von [[R,G," "],[R,G," "], [R,G," "], [R,G," "], [R,G," "] ] --> Grid mit Nodes welche angezeigt werden können 
-- Grid mit Nodes zu [[R,G," "],[R,G," "], [R,G," "], [R,G," "], [R,G," "] ] --> Map Funktion
--  ..... 
-"""
 
 
 class Node:
@@ -47,14 +42,15 @@ class Node:
 class Piece:
     def __init__(self, team):
         self.team = team
-        self.image = RED if self.team == 'R' else GREEN
         self.type = None
+        self.image = RED if team == 'R' else GREEN
 
     def draw(self, x, y):
         WIN.blit(self.image, (x, y))
 
 
-def convert_array_to_printable_grid(array: List[List[str]]) -> List[List[Node]]:
+
+def convert_array_to_printable_grid(game_board: TYPE_GAMEBOARD) -> List[List[Node]]:
     grid: List[List[Node]] = []
     for i in range(8):
         grid.append([])
@@ -62,25 +58,28 @@ def convert_array_to_printable_grid(array: List[List[str]]) -> List[List[Node]]:
             node = Node(j, i, WIDTH / ROWS)
             node.colour = BLACK if abs(i - j) % 2 == 0 else WHITE
             grid[i].append(node)
-            if array[i][j] == 'R':
+            if game_board[i][j].team == 'R' and not game_board[i][j].king:
                 grid[i][j].piece = Piece('R')
-            elif array[i][j] == 'G':
+            elif game_board[i][j].team == 'G' and not game_board[i][j].king:
                 grid[i][j].piece = Piece('G')
-            elif array[i][j] == 'RK':
+            elif game_board[i][j].team == 'R' and game_board[i][j].king:
                 grid[i][j].piece = Piece('R')
                 grid[i][j].piece.type = 'KING'
-            elif array[i][j] == 'GK':
+                grid[i][j].piece.image = REDKING
+            elif game_board[i][j].team== 'G' and game_board[i][j].king:
                 grid[i][j].piece = Piece('G')
                 grid[i][j].piece.type = 'KING'
+                grid[i][j].piece.image = GREENKING
     return grid
 
 
 def convert_printable_grid_to_array(grid: List[List[Node]]) -> TYPE_GAMEBOARD:
-    array: TYPE_GAMEBOARD = tuple(
-        tuple(str(node.piece.team + "K") if node.piece and node.piece.type == "KING" \
-              else str(node.piece.team) if node.piece else str(" ")
-              for node in row)
-        for row in grid
+    array = tuple(
+        tuple(logicPiece(team=node.piece.team,position=(row_index,col), king=True) if node.piece and node.piece.type == "KING" \
+              else logicPiece(team=node.piece.team, position=(row_index,col), king=False) if node.piece and not node.piece.type =="KING" \
+                else logicPiece(team=" ", position=(row_index,col), king=False)
+              for col,node in enumerate(row))
+        for row_index,row in enumerate(grid)
     )
     return array
 
@@ -106,7 +105,7 @@ def getNode(grid, rows, width):
 
 def resetColours(grid, node, generatePotentialMoves):
     computing_grid = convert_printable_grid_to_array(grid)
-    positions = generatePotentialMoves(computing_grid, node)
+    positions = generatePotentialMoves(computing_grid, computing_grid[node[0]][node[1]])
     positions.append(node)
 
     for colouredNodes in positions:
@@ -117,15 +116,9 @@ def resetColours(grid, node, generatePotentialMoves):
 
 def HighlightpotentialMoves(piecePosition, grid, generatePotentialMoves):
     computing_grid = convert_printable_grid_to_array(grid)
-    positions = generatePotentialMoves(computing_grid, piecePosition)
+    positions = generatePotentialMoves(computing_grid, computing_grid[piecePosition[0]][piecePosition[1]])
     for position in positions:
         Column, Row = position
         grid[Column][Row].colour = BLUE
 
 
-def opposite(team):
-    return "R" if team == "G" else "G"
-
-
-convert_array_to_printable_grid(get_initial_game_board())
-convert_printable_grid_to_array(convert_array_to_printable_grid(get_initial_game_board()))

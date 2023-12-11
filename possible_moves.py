@@ -1,118 +1,92 @@
 from typing import List, Tuple, Callable, Generator
+from classes import Piece, TYPE_GAMEBOARD, print_game_board
 
-GREEN_TEAM = ("G", "GK")
-RED_TEAM = ("R", "RK")
-TYPE_GAMEBOARD = Tuple[Tuple[str, ...], ...]
+
 def get_initial_game_board() -> TYPE_GAMEBOARD:
-    return (
-        ("R", " ", "R", " ", "R", " ", "R", " "),
-        (" ", "R", " ", "R", " ", "R", " ", "R"),
-        ("R", " ", "R", " ", "R", " ", "R", " "),
-        (" ", " ", " ", "GK", " ", "", " ", " "),
-        (" ", " ", " ", " ", " ", " ", " ", " "),
-        (" ", "G", " ", "G", " ", "G", " ", "G"),
-        ("G", " ", "G", " ", "G", " ", "G", " "),
-        (" ", "G", " ", "G", " ", "G", " ", "G"))
+    return tuple(
+        tuple(Piece(position=(row, column), team="R", king=False) if (row + column) % 2 == 0 and row < 3 else
+              Piece(position=(row, column), team="G", king=False) if (row + column) % 2 == 0 and row > 4 else
+              Piece(position=(row, column), team="R", king=True) if row ==4 and column == 4  else
+              Piece(position=(row, column), team=" ", king=False) for column in range(8))
+        for row in range(8))
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def get_possible_move_vectors(game_board: TYPE_GAMEBOARD, row: int, column: int, red_team: Callable, is_piece_there: Callable) -> List[Tuple[int, int]]:
-    is_king_type = game_board[row][column] == "RK" or game_board[row][column] == "GK"
-    if is_piece_there(game_board, row, column):
+def get_possible_move_vectors(game_board: TYPE_GAMEBOARD, piece: Piece, is_piece_there: Callable) -> List[Tuple[int, int]]:
+    if is_piece_there(game_board, piece):
         vectors_which_piece_can_move = [
-            (1, -1), (1, 1)] if red_team(game_board, row, column) else [(-1, -1), (-1, 1)]
-        if is_king_type:
+            (1, -1), (1, 1)] if piece.team == "R" else [(-1, -1), (-1, 1)]
+        if piece.king:
             vectors_which_piece_can_move = [(1, -1), (1, 1), (-1, -1), (-1, 1)]
-
         return vectors_which_piece_can_move
     else:
         return []
 
 
-def get_possible_moves_without_smash(game_board: TYPE_GAMEBOARD, nodePosition: Tuple[int, int],
+def get_possible_moves_without_smash(game_board: TYPE_GAMEBOARD, piece: Piece,
                                      vectors_which_piece_can_move: List[Tuple[int, int]],
                                      checker: Callable, piece_there: Callable) -> List[Tuple[int, int]]:
-    row, column = nodePosition
+    row, column = piece.position
     unfiltered_possible_positions = [(row + row_vector, column + column_vector)
                                      for row_vector, column_vector in vectors_which_piece_can_move]
-    positions_within_bound = filter(checker, unfiltered_possible_positions)
+    positions_within_bound = filter(lambda position: checker((position[0],position[1])), unfiltered_possible_positions)
 
     bounded_positions_without_piece_on_it = filter(
         lambda position: not piece_there(
-            game_board, position[0], position[1]),
+            game_board, game_board[position[0]][position[1]]),
         positions_within_bound
     )
     return list(bounded_positions_without_piece_on_it)
 
 
-def get_possible_smash_moves(game_board: TYPE_GAMEBOARD, nodePosition: Tuple[int, int],
-                             checker: Callable, red_team: Callable,
+def get_possible_smash_moves(game_board: TYPE_GAMEBOARD, piece: Piece,
+                             checker: Callable,
                              vectors_which_piece_can_move: List[Tuple[int, int]],
                              is_piece_there: Callable) -> List[Tuple[int, int]]:
-    row, column = nodePosition
+    row, column = piece.position
 
-    def opposite_piece_on_field(
-            team_red, position):
-        return team_red and position in GREEN_TEAM or not team_red and position in RED_TEAM
-    def opposite_pieces_on_position(position): return opposite_piece_on_field(
-        team_red=red_team(game_board, row, column), position=position)
+    def opposite_pieces_on_position(own_piece: Piece, newPositionPiece: Piece):
+        return own_piece.team != " " and newPositionPiece.team != " " and own_piece.team != newPositionPiece.team
 
     # Erstmal davon ausgehen dass ich überall schmeißen kann
-    unfiltered_possible_positions_smash = ((row + 2*row_vector, column + 2*column_vector)
+    possible_smash_positions =  ((row + 2*row_vector, column + 2*column_vector)
                                            for row_vector, column_vector in vectors_which_piece_can_move
-                                           if opposite_pieces_on_position(game_board[row + row_vector][column + column_vector]) and
-                                           not is_piece_there(game_board=game_board, row=row + 2*row_vector, column=column + 2*column_vector))
+                                           if checker((row +row_vector,column+column_vector)) and checker((row +2*row_vector,column + 2*column_vector))\
+                                              and opposite_pieces_on_position(own_piece=game_board[row][column], newPositionPiece=game_board[row + row_vector][column + column_vector])\
+                                                and not is_piece_there(game_board=game_board, piece=game_board[row+2*row_vector][column+2*column_vector]))
 
-    possible_smash_positions = filter(
-        checker, unfiltered_possible_positions_smash)
     return list(possible_smash_positions)
 
-def red_team(game_board: TYPE_GAMEBOARD, row, column) -> bool:
-    return game_board[row][column] in RED_TEAM
 
-def get_all_possible_moves(game_board: TYPE_GAMEBOARD, nodePosition: Tuple[int, int]) -> List[Tuple[int, int]]:
+def get_all_possible_moves(game_board: TYPE_GAMEBOARD, piece: Piece) -> List[Tuple[int, int]]:
+    def check_if_position_out_of_bound(
+        position: Tuple[int,int]): return 0 <= position[0] < 8 and 0 <= position[1] < 8
 
-
-    def is_piece_there_row_column(
-        game_board, row, column): return game_board[row][column] in RED_TEAM or game_board[row][column] in GREEN_TEAM
+    def is_piece_there_on_row_column(game_board: TYPE_GAMEBOARD, piece: Piece): return check_if_position_out_of_bound(
+        piece.position) and (game_board[piece.position[0]][piece.position[1]].team != " ")
 
     possible_moves: List[Tuple[int, int]] = []
-    row, column = nodePosition
     vectors_which_piece_can_move = get_possible_move_vectors(
-        game_board=game_board, row=row, column=column, red_team=red_team, is_piece_there=is_piece_there_row_column)
+        game_board=game_board, piece=piece, is_piece_there=is_piece_there_on_row_column)
 
     if vectors_which_piece_can_move:
-        def check_if_position_out_of_bound(
-            position): return 0 <= position[0] < 8 and 0 <= position[1] < 8
 
         bounded_positions_without_piece_on_it = get_possible_moves_without_smash(
-            game_board=game_board, nodePosition=nodePosition,
+            game_board=game_board, piece=piece,
             vectors_which_piece_can_move=vectors_which_piece_can_move,
-            checker=check_if_position_out_of_bound, piece_there=is_piece_there_row_column)
+            checker=check_if_position_out_of_bound, piece_there=is_piece_there_on_row_column)
 
         possible_smash_positions = get_possible_smash_moves(
-            game_board=game_board, nodePosition=nodePosition,
+            game_board=game_board, piece=piece,
             vectors_which_piece_can_move=vectors_which_piece_can_move,
             checker=check_if_position_out_of_bound,
-            red_team=red_team, is_piece_there=is_piece_there_row_column)
+            is_piece_there=is_piece_there_on_row_column)
 
         possible_moves = list(possible_smash_positions) + \
             list(bounded_positions_without_piece_on_it)
     return possible_moves
 
+if __name__ == "__main__":
+    game_board = get_initial_game_board()
+    print_game_board(game_board=game_board)
+    print(get_all_possible_moves(game_board=game_board, piece=game_board[5][5]))

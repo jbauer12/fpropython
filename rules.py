@@ -1,34 +1,34 @@
 from typing import List, Tuple, Callable
-from possible_moves import get_all_possible_moves_for_gui, TYPE_GAMEBOARD
-from classes import Piece	
+from possible_moves import  get_all_possible_moves_for_piece_gui
+from classes import Piece, GameBoard
 
 
 def opposite(piece: Piece):
     return "R" if piece.team == "G" else "G"
 
 
-def make_move(game_board: TYPE_GAMEBOARD, newPosition: Tuple[int, int], piece:Piece) -> Tuple[str, TYPE_GAMEBOARD]:
+def make_move(game_board: GameBoard, newPosition: Tuple[int, int], piece:Piece) -> GameBoard:
     row, column = newPosition
-    moves = get_all_possible_moves_for_gui(
-        game_board=game_board, piece=game_board[piece.position[0]][piece.position[1]])
+    moves = get_all_possible_moves_for_piece_gui(
+        game_board=game_board, piece=game_board.game_board[piece.position[0]][piece.position[1]])
 
 
 
     def nextPlayer(smash: bool, piece: Piece):
         team = "R" if piece.team =="R" else "G"
         return team if smash else opposite(
-            game_board[piece.position[0]][piece.position[1]])
+            game_board.game_board[piece.position[0]][piece.position[1]])
 
     if (row, column) in moves:
         smash = is_opposite_piece_smashed(piece=piece, newPosition=newPosition)
         game_board_after_move = place_piece_on_new_position(game_board=game_board, piece=piece,
                                                             newPosition=newPosition, smash=smash)
-        return (nextPlayer(smash, piece), game_board_after_move)
+        return GameBoard(game_board=game_board_after_move, currPlayer=nextPlayer(smash, piece))
     else:
-        return (nextPlayer(False, piece), game_board)
+        return GameBoard(game_board=game_board.game_board, currPlayer=nextPlayer(False, piece))
 
 
-def place_piece_on_new_position(game_board: TYPE_GAMEBOARD, piece: Piece,
+def place_piece_on_new_position(game_board: GameBoard, piece: Piece,
                                 newPosition: Tuple[int, int],  smash: bool ):
     row, column = newPosition
     oldrow, oldcolumn = piece.position
@@ -43,7 +43,7 @@ def place_piece_on_new_position(game_board: TYPE_GAMEBOARD, piece: Piece,
     return tuple(
         tuple(Piece(position=newPosition, team=piece.team, king=is_piece_checker_after_move(piece, newPosition=newPosition)) if i == row and j == column
               else Piece(position=newPosition, team=" ", king=False) if (delete_piece_team(i, j, oldrow, oldcolumn)) else col for j, col in enumerate(r))
-        for i, r in enumerate(game_board))
+        for i, r in enumerate(game_board.game_board))
 
 
 def is_opposite_piece_smashed(piece:Piece, newPosition: Tuple[int, int]) -> bool:
@@ -62,6 +62,6 @@ def is_piece_checker_after_move(piece: Piece, newPosition: Tuple[int, int]) -> b
 
 
 
-def is_game_over(game_board: TYPE_GAMEBOARD, piece: Piece) -> bool:
-
-    return True if len(get_all_possible_moves(game_board=game_board, piece=piece )) == 0 else False
+def is_game_over(game_board: GameBoard, piece: Piece):
+    pass
+    #return True if len(get_all_possible_moves(game_board=game_board.game_board, piece=piece )) == 0 else False

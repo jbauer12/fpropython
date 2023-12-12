@@ -1,7 +1,7 @@
 import pygame
 from typing import List, Tuple
-from possible_moves import TYPE_GAMEBOARD, get_initial_game_board
-from classes import Piece as logicPiece
+from possible_moves import get_initial_game_board
+from classes import Piece as logicPiece, GameBoard
 
 WIDTH = 800
 ROWS = 8
@@ -50,8 +50,9 @@ class Piece:
 
 
 
-def convert_array_to_printable_grid(game_board: TYPE_GAMEBOARD) -> List[List[Node]]:
+def convert_array_to_printable_grid(board: GameBoard) -> List[List[Node]]:
     grid: List[List[Node]] = []
+    game_board = board.game_board
     for i in range(8):
         grid.append([])
         for j in range(8):
@@ -73,15 +74,15 @@ def convert_array_to_printable_grid(game_board: TYPE_GAMEBOARD) -> List[List[Nod
     return grid
 
 
-def convert_printable_grid_to_array(grid: List[List[Node]]) -> TYPE_GAMEBOARD:
-    array = tuple(
+def convert_printable_grid_to_array(grid: List[List[Node]]) -> GameBoard:
+    game_board = tuple(
         tuple(logicPiece(team=node.piece.team,position=(row_index,col), king=True) if node.piece and node.piece.type == "KING" \
               else logicPiece(team=node.piece.team, position=(row_index,col), king=False) if node.piece and not node.piece.type =="KING" \
                 else logicPiece(team=" ", position=(row_index,col), king=False)
               for col,node in enumerate(row))
         for row_index,row in enumerate(grid)
     )
-    return array
+    return GameBoard(game_board=game_board, currPlayer="")
 
 
 def update_display(grid):
@@ -105,7 +106,7 @@ def getNode(grid, rows, width):
 
 def resetColours(grid, node, generatePotentialMoves):
     computing_grid = convert_printable_grid_to_array(grid)
-    positions = generatePotentialMoves(computing_grid, computing_grid[node[0]][node[1]])
+    positions = generatePotentialMoves(computing_grid, computing_grid.game_board[node[0]][node[1]])
     positions.append(node)
 
     for colouredNodes in positions:
@@ -116,7 +117,7 @@ def resetColours(grid, node, generatePotentialMoves):
 
 def HighlightpotentialMoves(piecePosition, grid, generatePotentialMoves):
     computing_grid = convert_printable_grid_to_array(grid)
-    positions = generatePotentialMoves(computing_grid, computing_grid[piecePosition[0]][piecePosition[1]])
+    positions = generatePotentialMoves(computing_grid, computing_grid.game_board[piecePosition[0]][piecePosition[1]])
     for position in positions:
         Column, Row = position
         grid[Column][Row].colour = BLUE

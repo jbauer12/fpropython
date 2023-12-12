@@ -10,18 +10,18 @@ def highlight(ClickedNode, Grid, OldHighlight):
     Grid[Column][Row].colour = ORANGE
     if OldHighlight:
         resetColours(Grid, OldHighlight,
-                     generatePotentialMoves=possible_moves.get_all_possible_moves_for_gui)
+                     generatePotentialMoves=possible_moves.get_all_possible_moves_for_piece_gui)
     HighlightpotentialMoves(
-        ClickedNode, Grid, possible_moves.get_all_possible_moves_for_gui)
+        ClickedNode, Grid, possible_moves.get_all_possible_moves_for_piece_gui)
     return (Column, Row)
 
 
 def move(grid, piecePosition, newPosition):
-    resetColours(grid, piecePosition, possible_moves.get_all_possible_moves_for_gui)
+    resetColours(grid, piecePosition, possible_moves.get_all_possible_moves_for_piece_gui)
     game_board = convert_printable_grid_to_array(grid)
-    next_player, new_game_board = make_move(game_board=game_board, newPosition=newPosition, piece=game_board[piecePosition[0]][piecePosition[1]])
+    new_game_board = make_move(game_board=game_board, newPosition=newPosition, piece=game_board.game_board[piecePosition[0]][piecePosition[1]])
     grid = make_grid(new_game_board)
-    return grid, next_player
+    return grid, new_game_board.currPlayer
 
 
 def main(WIDTH, ROWS):
@@ -44,7 +44,7 @@ def main(WIDTH, ROWS):
                         pieceColumn, pieceRow = highlightedPiece
                     if currMove == grid[pieceColumn][pieceRow].piece.team:
                         resetColours(grid, highlightedPiece,
-                                     possible_moves.get_all_possible_moves_for_gui)
+                                     possible_moves.get_all_possible_moves_for_piece_gui)
                         grid, currMove = move(
                             grid, highlightedPiece, clickedNode)
                 elif highlightedPiece == clickedNode:

@@ -1,24 +1,23 @@
 import sys
 from itertools import combinations
 from gui import *
-import possible_moves as possible_moves
+import possible_moves 
 from rules import make_move
 
 
-# passt
 def highlight(ClickedNode, Grid, OldHighlight):
     Column, Row = ClickedNode
     Grid[Column][Row].colour = ORANGE
     if OldHighlight:
         resetColours(Grid, OldHighlight,
-                     generatePotentialMoves=possible_moves.get_all_possible_moves)
+                     generatePotentialMoves=possible_moves.get_all_possible_moves_for_gui)
     HighlightpotentialMoves(
-        ClickedNode, Grid, possible_moves.get_all_possible_moves)
+        ClickedNode, Grid, possible_moves.get_all_possible_moves_for_gui)
     return (Column, Row)
 
 
 def move(grid, piecePosition, newPosition):
-    resetColours(grid, piecePosition, possible_moves.get_all_possible_moves)
+    resetColours(grid, piecePosition, possible_moves.get_all_possible_moves_for_gui)
     game_board = convert_printable_grid_to_array(grid)
     next_player, new_game_board = make_move(game_board=game_board, newPosition=newPosition, piece=game_board[piecePosition[0]][piecePosition[1]])
     grid = make_grid(new_game_board)
@@ -45,7 +44,7 @@ def main(WIDTH, ROWS):
                         pieceColumn, pieceRow = highlightedPiece
                     if currMove == grid[pieceColumn][pieceRow].piece.team:
                         resetColours(grid, highlightedPiece,
-                                     possible_moves.get_all_possible_moves)
+                                     possible_moves.get_all_possible_moves_for_gui)
                         grid, currMove = move(
                             grid, highlightedPiece, clickedNode)
                 elif highlightedPiece == clickedNode:

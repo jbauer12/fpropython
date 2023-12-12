@@ -1,5 +1,5 @@
 from typing import List, Tuple, Callable
-from possible_moves import get_all_possible_moves, TYPE_GAMEBOARD
+from possible_moves import get_all_possible_moves_for_gui, TYPE_GAMEBOARD
 from classes import Piece	
 
 
@@ -9,7 +9,7 @@ def opposite(piece: Piece):
 
 def make_move(game_board: TYPE_GAMEBOARD, newPosition: Tuple[int, int], piece:Piece) -> Tuple[str, TYPE_GAMEBOARD]:
     row, column = newPosition
-    moves = get_all_possible_moves(
+    moves = get_all_possible_moves_for_gui(
         game_board=game_board, piece=game_board[piece.position[0]][piece.position[1]])
 
 
@@ -61,3 +61,7 @@ def is_piece_checker_after_move(piece: Piece, newPosition: Tuple[int, int]) -> b
     else: return False
 
 
+
+def is_game_over(game_board: TYPE_GAMEBOARD, piece: Piece) -> bool:
+
+    return True if len(get_all_possible_moves(game_board=game_board, piece=piece )) == 0 else False

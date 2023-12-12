@@ -5,20 +5,20 @@ import possible_moves
 from rules import make_move
 
 
-def highlight(ClickedNode, Grid, OldHighlight):
+def highlight(ClickedNode, Grid, OldHighlight, currPlayer:str):
     Column, Row = ClickedNode
     Grid[Column][Row].colour = ORANGE
     if OldHighlight:
         resetColours(Grid, OldHighlight,
-                     generatePotentialMoves=possible_moves.get_all_possible_moves_for_piece_gui)
+                     generatePotentialMoves=possible_moves.get_all_possible_moves_for_piece_gui, currPlayer=currPlayer)
     HighlightpotentialMoves(
-        ClickedNode, Grid, possible_moves.get_all_possible_moves_for_piece_gui)
+        ClickedNode, Grid, possible_moves.get_all_possible_moves_for_piece_gui, currPlayer=currPlayer)
     return (Column, Row)
 
 
-def move(grid, piecePosition, newPosition):
-    resetColours(grid, piecePosition, possible_moves.get_all_possible_moves_for_piece_gui)
-    game_board = convert_printable_grid_to_array(grid)
+def move(grid, piecePosition, newPosition, currPlayer):
+    resetColours(grid, piecePosition, possible_moves.get_all_possible_moves_for_piece_gui, currPlayer=currPlayer)
+    game_board = convert_printable_grid_to_array(grid, currPlayer)
     new_game_board = make_move(game_board=game_board, newPosition=newPosition, piece=game_board.game_board[piecePosition[0]][piecePosition[1]])
     grid = make_grid(new_game_board)
     return grid, new_game_board.currPlayer
@@ -44,16 +44,16 @@ def main(WIDTH, ROWS):
                         pieceColumn, pieceRow = highlightedPiece
                     if currMove == grid[pieceColumn][pieceRow].piece.team:
                         resetColours(grid, highlightedPiece,
-                                     possible_moves.get_all_possible_moves_for_piece_gui)
+                                     possible_moves.get_all_possible_moves_for_piece_gui, currPlayer=currMove)
                         grid, currMove = move(
-                            grid, highlightedPiece, clickedNode)
+                            grid, highlightedPiece, clickedNode, currMove)
                 elif highlightedPiece == clickedNode:
                     pass
                 else:
                     if grid[ClickedPositionColumn][ClickedPositionRow].piece:
                         if currMove == grid[ClickedPositionColumn][ClickedPositionRow].piece.team:
                             highlightedPiece = highlight(
-                                clickedNode, grid, highlightedPiece)
+                                clickedNode, grid, highlightedPiece, currMove)
 
         update_display(grid)
 

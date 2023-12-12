@@ -74,7 +74,7 @@ def convert_array_to_printable_grid(board: GameBoard) -> List[List[Node]]:
     return grid
 
 
-def convert_printable_grid_to_array(grid: List[List[Node]]) -> GameBoard:
+def convert_printable_grid_to_array(grid: List[List[Node]], currPlayer:str) -> GameBoard:
     game_board = tuple(
         tuple(logicPiece(team=node.piece.team,position=(row_index,col), king=True) if node.piece and node.piece.type == "KING" \
               else logicPiece(team=node.piece.team, position=(row_index,col), king=False) if node.piece and not node.piece.type =="KING" \
@@ -82,7 +82,7 @@ def convert_printable_grid_to_array(grid: List[List[Node]]) -> GameBoard:
               for col,node in enumerate(row))
         for row_index,row in enumerate(grid)
     )
-    return GameBoard(game_board=game_board, currPlayer="")
+    return GameBoard(game_board=game_board, currPlayer=currPlayer)
 
 
 def update_display(grid):
@@ -104,8 +104,8 @@ def getNode(grid, rows, width):
     return (Col, Row)
 
 
-def resetColours(grid, node, generatePotentialMoves):
-    computing_grid = convert_printable_grid_to_array(grid)
+def resetColours(grid, node, generatePotentialMoves, currPlayer:str):
+    computing_grid = convert_printable_grid_to_array(grid, currPlayer=currPlayer)
     positions = generatePotentialMoves(computing_grid, computing_grid.game_board[node[0]][node[1]])
     positions.append(node)
 
@@ -115,8 +115,8 @@ def resetColours(grid, node, generatePotentialMoves):
             nodeX - nodeY) % 2 == 0 else WHITE
 
 
-def HighlightpotentialMoves(piecePosition, grid, generatePotentialMoves):
-    computing_grid = convert_printable_grid_to_array(grid)
+def HighlightpotentialMoves(piecePosition, grid, generatePotentialMoves, currPlayer:str):
+    computing_grid = convert_printable_grid_to_array(grid=grid, currPlayer=currPlayer)
     positions = generatePotentialMoves(computing_grid, computing_grid.game_board[piecePosition[0]][piecePosition[1]])
     for position in positions:
         Column, Row = position

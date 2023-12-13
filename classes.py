@@ -27,9 +27,3 @@ class GameBoard(BaseModel):
     class Config:
         frozen = True
 
-def print_game_board(board: GameBoard) -> None:
-    game_board= board.game_board
-    for row in game_board:
-        for piece in row:
-            print(piece, end=" ")
-        print()

@@ -1,6 +1,6 @@
 from typing import Tuple
-from classes import Piece, print_game_board, GameBoard
-from possible_moves import get_all_possible_moves_for_team, get_initial_game_board
+from classes import Piece, GameBoard
+from possible_moves import get_all_possible_moves_for_team
 from rules import make_move
 
 def opposite(team:str, smash:bool):
@@ -9,36 +9,27 @@ def opposite(team:str, smash:bool):
 
 def terminal(game_board: GameBoard) -> bool:
     """Endzustand ja oder nein?"""
-    number_red_pieces = sum(1 for row in game_board.game_board for piece in row if piece.team == "R") == 0
-    number_green_pieces = sum(1 for row in game_board.game_board for piece in row if piece.team == "G") == 0
+    number_red_pieces = all(piece.team =="R" for row in game_board.game_board for piece in row) 
+    number_green_pieces = all(piece.team =="G" for row in game_board.game_board for piece in row) 
 
     return number_red_pieces or number_green_pieces
 
 
 def value_from(game_board: GameBoard):
-    """Bewertungsfunktion --> Wert des Endzustandes
-    Max Player wants to maximize the value --> Value +1 --> Red
-    Min Player wants to minimize the value --> Value -1 --> Green"""
-    """Bewertungsfunktion --> Wert des Endzustandes
-    Max Player wants to maximize the value --> Value +1 --> Red
-    Min Player wants to minimize the value --> Value -1 --> Green"""
-    piece_count_weight = 5
-    kinged_piece_weight = 3
-    positional_weight = 0.5
+    def value_from_piece(piece, positional_weight):
+        piece_count_weight = 5
+        kinged_piece_weight = 3
+        return piece_count_weight + kinged_piece_weight * piece.king + piece.position[0] * positional_weight
 
     player_score = sum(
-        piece_count_weight +
-        kinged_piece_weight * piece.king +
-        piece.position[0] * positional_weight
+        value_from_piece(piece, positional_weight=0.5)
         for row in game_board.game_board
         for piece in row
         if piece.team == game_board.currPlayer
     )
 
     opponent_score = sum(
-        piece_count_weight +
-        kinged_piece_weight * piece.king +
-        (7 - piece.position[0]) * positional_weight
+        value_from_piece(piece, positional_weight=0.5)
         for row in game_board.game_board
         for piece in row
         if piece.team != " " and piece.team != game_board.currPlayer
@@ -66,8 +57,6 @@ def result(game_board: GameBoard, action: Tuple[Tuple[int, int], Tuple[int, int]
     if not terminal(game_board=game_board):
         oldPosition, newPosition = action
         piece = game_board.game_board[oldPosition[0]][oldPosition[1]]
-        """Ergebnis eines Zuges
-        return new game board"""
         return make_move(game_board=game_board, newPosition=newPosition, piece=piece)
     else: return game_board
 
@@ -76,10 +65,8 @@ def result(game_board: GameBoard, action: Tuple[Tuple[int, int], Tuple[int, int]
 
 
 def minimax(state:GameBoard, depth, player):
-    if player == "R":
-        best = [None,  -1000000]
-    else:
-        best = [None, +1000000]
+
+    best_score = [None,  -1000000] if player == "R" else [None, +1000000]
 
     if depth == 0 or terminal(state):
         score = value_from(state)
@@ -90,13 +77,13 @@ def minimax(state:GameBoard, depth, player):
         value = minimax(result1, depth - 1, opposite(player, result1.currPlayer == player))
 
         if player == "R":
-            if value[1] > best[1]:
-                best = [action, value[1]]
+            if value[1] > best_score[1]:
+                best_score = [action, value[1]]
         else:
-            if value[1] < best[1]:
-                best = [action, value[1]]
+            if value[1] < best_score[1]:
+                best_score = [action, value[1]]
 
-    return best
+    return best_score
 
 def minimax_for_gui(state:GameBoard, player):
     best = minimax(state, 4, player)

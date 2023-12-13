@@ -1,6 +1,6 @@
 import pygame
-from typing import List, Tuple
-from possible_moves import get_initial_game_board
+from typing import List, Optional, Tuple
+import possible_moves 
 from classes import Piece as logicPiece, GameBoard
 
 WIDTH = 800
@@ -37,6 +37,9 @@ class Node:
                          WIDTH / ROWS, WIDTH / ROWS))
         if self.piece:
             WIN.blit(self.piece.image, (self.x, self.y))
+    def set_piece(self, piece):
+        self.piece = piece
+        return self
 
 
 class Piece:
@@ -50,39 +53,48 @@ class Piece:
 
 
 
+
 def convert_array_to_printable_grid(board: GameBoard) -> List[List[Node]]:
-    grid: List[List[Node]] = []
     game_board = board.game_board
-    for i in range(8):
-        grid.append([])
-        for j in range(8):
-            node = Node(j, i, WIDTH / ROWS)
-            node.colour = BLACK if abs(i - j) % 2 == 0 else WHITE
-            grid[i].append(node)
-            if game_board[i][j].team == 'R' and not game_board[i][j].king:
-                grid[i][j].piece = Piece('R')
-            elif game_board[i][j].team == 'G' and not game_board[i][j].king:
-                grid[i][j].piece = Piece('G')
-            elif game_board[i][j].team == 'R' and game_board[i][j].king:
-                grid[i][j].piece = Piece('R')
-                grid[i][j].piece.type = 'KING'
-                grid[i][j].piece.image = REDKING
-            elif game_board[i][j].team== 'G' and game_board[i][j].king:
-                grid[i][j].piece = Piece('G')
-                grid[i][j].piece.type = 'KING'
-                grid[i][j].piece.image = GREENKING
+
+    def create_node(row, col):
+        node = Node(col, row, WIDTH / ROWS)
+        node.colour = BLACK if abs(row - col) % 2 == 0 else WHITE
+        return node
+
+    def create_piece(team, king):
+        piece = Piece(team)
+        if king:
+            piece.type = 'KING'
+            piece.image = REDKING if team == 'R' else GREENKING
+        return piece
+
+    grid = [[create_node(i, j)
+            .set_piece(create_piece(game_board[i][j].team, game_board[i][j].king) if game_board[i][j].team != " " else None)
+            for j in range(8)]
+        for i in range(8)]
+
     return grid
 
 
-def convert_printable_grid_to_array(grid: List[List[Node]], currPlayer:str) -> GameBoard:
+
+
+def convert_printable_grid_to_array(grid: List[List[Node]], currPlayer: str) -> GameBoard:
+    def create_logic_piece(node: Optional[Node], row_index: int, col: int) -> logicPiece:
+        if node and node.piece:
+            if node.piece.type == "KING":
+                return logicPiece(team=node.piece.team, position=(row_index, col), king=True)
+            else:
+                return logicPiece(team=node.piece.team, position=(row_index, col), king=False)
+        else:
+            return logicPiece(team=" ", position=(row_index, col), king=False)
+        
     game_board = tuple(
-        tuple(logicPiece(team=node.piece.team,position=(row_index,col), king=True) if node.piece and node.piece.type == "KING" \
-              else logicPiece(team=node.piece.team, position=(row_index,col), king=False) if node.piece and not node.piece.type =="KING" \
-                else logicPiece(team=" ", position=(row_index,col), king=False)
-              for col,node in enumerate(row))
-        for row_index,row in enumerate(grid)
+        tuple(create_logic_piece(node, row_index, col) for col, node in enumerate(row))
+        for row_index, row in enumerate(grid)
     )
     return GameBoard(game_board=game_board, currPlayer=currPlayer)
+
 
 
 def update_display(grid):
@@ -123,3 +135,12 @@ def HighlightpotentialMoves(piecePosition, grid, generatePotentialMoves, currPla
         grid[Column][Row].colour = BLUE
 
 
+def highlight(ClickedNode, Grid, OldHighlight, currPlayer:str):
+    Column, Row = ClickedNode
+    Grid[Column][Row].colour = ORANGE
+    if OldHighlight:
+        resetColours(Grid, OldHighlight,
+                     generatePotentialMoves=possible_moves.get_all_possible_moves_for_piece_gui, currPlayer=currPlayer)
+    HighlightpotentialMoves(
+        ClickedNode, Grid, possible_moves.get_all_possible_moves_for_piece_gui, currPlayer=currPlayer)
+    return (Column, Row)

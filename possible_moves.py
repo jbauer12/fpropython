@@ -7,7 +7,9 @@ def get_initial_game_board() -> GameBoard:
         tuple(Piece(position=(row, column), team="R", king=False,) if (row + column) % 2 == 0 and row < 3 else
               Piece(position=(row, column), team="G", king=False) if (row + column) % 2 == 0 and row > 4 else
               # Testen
-              Piece(position=(row, column), team="G", king=True) if row == 3 and column == 3 else
+             # Piece(position=(row, column), team="G", king=False) if row == 3 and column == 3 else
+              #Piece(position=(row, column), team="G", king=True) if row == 5 and column == 1 else
+
               Piece(position=(row, column), team=" ", king=False) for column in range(8))
         for row in range(8)), currPlayer="G")
 

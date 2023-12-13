@@ -1,55 +1,103 @@
+from typing import Tuple
 from classes import Piece, print_game_board, GameBoard
 from possible_moves import get_all_possible_moves_for_team, get_initial_game_board
+from rules import make_move
 
+def opposite(team:str, smash:bool):
+    if smash: return team
+    return "R" if team == "G" else "G"
 
 def terminal(game_board: GameBoard) -> bool:
     """Endzustand ja oder nein?"""
-    # TODO Keine Züge mehr möglich
-    # --> eine Farbe oder
-    # zwei Farben --> dann Remis
     number_red_pieces = sum(1 for row in game_board.game_board for piece in row if piece.team == "R") == 0
     number_green_pieces = sum(1 for row in game_board.game_board for piece in row if piece.team == "G") == 0
 
     return number_red_pieces or number_green_pieces
 
 
-def value(game_board: GameBoard):
+def value_from(game_board: GameBoard):
     """Bewertungsfunktion --> Wert des Endzustandes
-    Max Player wants to maximize the value --> Value +1
-    Min Player wants to minimize the value --> Value -1"""
-    pass
+    Max Player wants to maximize the value --> Value +1 --> Red
+    Min Player wants to minimize the value --> Value -1 --> Green"""
+    """Bewertungsfunktion --> Wert des Endzustandes
+    Max Player wants to maximize the value --> Value +1 --> Red
+    Min Player wants to minimize the value --> Value -1 --> Green"""
+    piece_count_weight = 5
+    kinged_piece_weight = 3
+    positional_weight = 0.5
+
+    player_score = sum(
+        piece_count_weight +
+        kinged_piece_weight * piece.king +
+        piece.position[0] * positional_weight
+        for row in game_board.game_board
+        for piece in row
+        if piece.team == game_board.currPlayer
+    )
+
+    opponent_score = sum(
+        piece_count_weight +
+        kinged_piece_weight * piece.king +
+        (7 - piece.position[0]) * positional_weight
+        for row in game_board.game_board
+        for piece in row
+        if piece.team != " " and piece.team != game_board.currPlayer
+    )
+
+    return opponent_score - player_score
 
 
 def player(game_board: GameBoard):
     """Wer ist am Zug?
     return max or min player"""
-    pass
+    return game_board.currPlayer
 
 
-def actions(game_board: GameBoard, piece: Piece):
+def actions(game_board: GameBoard, team: str):
     """Welche Züge sind möglich?
     return list of possible moves"""
-    return get_all_possible_moves_for_team(game_board=game_board, team=piece.team)
+    pieces_with_all_possible_moves = get_all_possible_moves_for_team(game_board=game_board, team=team)
+    actions = [(piece.position, move) for piece in pieces_with_all_possible_moves for move in piece.possible_positions]
+    return actions
     
 
 
-def result(game_board: GameBoard, action):
-    """Ergebnis eines Zuges
-    return new game board"""
-    pass
+def result(game_board: GameBoard, action: Tuple[Tuple[int, int], Tuple[int, int]]):
+    if not terminal(game_board=game_board):
+        oldPosition, newPosition = action
+        piece = game_board.game_board[oldPosition[0]][oldPosition[1]]
+        """Ergebnis eines Zuges
+        return new game board"""
+        return make_move(game_board=game_board, newPosition=newPosition, piece=piece)
+    else: return game_board
 
 
-def minimax(game_board: GameBoard, depth: int = 10):
-
-    if depth == 0 or terminal(game_board):
-        # game over
-        return value(game_board)
-    elif player(game_board) == "max":
-        # max player
-        return max(minimax(result(game_board, action), depth=depth-1) for action in actions(game_board))
-    elif player(game_board) == "min":
-        # min player
-        return min(minimax(result(game_board, action), depth=depth-1) for action in actions(game_board))
 
 
-minimax(get_initial_game_board())
+
+def minimax(state:GameBoard, depth, player):
+    if player == "R":
+        best = [None,  -1000000]
+    else:
+        best = [None, +1000000]
+
+    if depth == 0 or terminal(state):
+        score = value_from(state)
+        return [None, score]
+
+    for action in actions(state, player):
+        result1 = result(state, action)
+        value = minimax(result1, depth - 1, opposite(player, result1.currPlayer == player))
+
+        if player == "R":
+            if value[1] > best[1]:
+                best = [action, value[1]]
+        else:
+            if value[1] < best[1]:
+                best = [action, value[1]]
+
+    return best
+
+def minimax_for_gui(state:GameBoard, player):
+    best = minimax(state, 4, player)
+    return result(state, best[0])

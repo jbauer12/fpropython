@@ -1,19 +1,11 @@
 import sys
-from itertools import combinations
 from gui import *
 import possible_moves 
 from rules import make_move
+from minimax import minimax_for_gui
 
 
-def highlight(ClickedNode, Grid, OldHighlight, currPlayer:str):
-    Column, Row = ClickedNode
-    Grid[Column][Row].colour = ORANGE
-    if OldHighlight:
-        resetColours(Grid, OldHighlight,
-                     generatePotentialMoves=possible_moves.get_all_possible_moves_for_piece_gui, currPlayer=currPlayer)
-    HighlightpotentialMoves(
-        ClickedNode, Grid, possible_moves.get_all_possible_moves_for_piece_gui, currPlayer=currPlayer)
-    return (Column, Row)
+
 
 
 def move(grid, piecePosition, newPosition, currPlayer):
@@ -23,6 +15,37 @@ def move(grid, piecePosition, newPosition, currPlayer):
     grid = make_grid(new_game_board)
     return grid, new_game_board.currPlayer
 
+def handle_quit():
+    print('EXIT SUCCESSFUL')
+    pygame.quit()
+    sys.exit()
+
+def handle_mouse_click(grid, highlighted_piece, curr_move):
+    clicked_node = getNode(grid, ROWS, WIDTH)
+    clicked_position_column, clicked_position_row = clicked_node
+
+    if grid[clicked_position_column][clicked_position_row].colour == BLUE:
+        if highlighted_piece:
+            piece_column, piece_row = highlighted_piece
+
+        if curr_move == grid[piece_column][piece_row].piece.team:
+            resetColours(grid, highlighted_piece, possible_moves.get_all_possible_moves_for_piece_gui, currPlayer=curr_move)
+            grid, curr_move = move(grid, highlighted_piece, clicked_node, curr_move)
+            update_display(grid)
+
+    elif highlighted_piece == clicked_node:
+        pass
+    else:
+        if grid[clicked_position_column][clicked_position_row].piece:
+            if curr_move == grid[clicked_position_column][clicked_position_row].piece.team:
+                highlighted_piece = highlight(clicked_node, grid, highlighted_piece, curr_move)
+
+    return grid, highlighted_piece, curr_move
+
+def handle_computer_move(grid, highlighted_piece, curr_move):
+    resetColours(grid, highlighted_piece, possible_moves.get_all_possible_moves_for_piece_gui, currPlayer=curr_move)
+    game_board = minimax_for_gui(state=convert_printable_grid_to_array(grid, curr_move), player=curr_move)
+    return make_grid(game_board), game_board.currPlayer
 
 def main(WIDTH, ROWS):
     grid = make_grid(possible_moves.get_initial_game_board())
@@ -32,30 +55,15 @@ def main(WIDTH, ROWS):
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                print('EXIT SUCCESSFUL')
-                pygame.quit()
-                sys.exit()
+                handle_quit()
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                clickedNode = getNode(grid, ROWS, WIDTH)
-                ClickedPositionColumn, ClickedPositionRow = clickedNode
-                if grid[ClickedPositionColumn][ClickedPositionRow].colour == BLUE:
-                    if highlightedPiece:
-                        pieceColumn, pieceRow = highlightedPiece
-                    if currMove == grid[pieceColumn][pieceRow].piece.team:
-                        resetColours(grid, highlightedPiece,
-                                     possible_moves.get_all_possible_moves_for_piece_gui, currPlayer=currMove)
-                        grid, currMove = move(
-                            grid, highlightedPiece, clickedNode, currMove)
-                elif highlightedPiece == clickedNode:
-                    pass
-                else:
-                    if grid[ClickedPositionColumn][ClickedPositionRow].piece:
-                        if currMove == grid[ClickedPositionColumn][ClickedPositionRow].piece.team:
-                            highlightedPiece = highlight(
-                                clickedNode, grid, highlightedPiece, currMove)
+            if event.type == pygame.MOUSEBUTTONDOWN and currMove == 'G':
+                grid, highlightedPiece, currMove = handle_mouse_click(grid, highlightedPiece, currMove)
 
+            if currMove == 'R':
+                grid, currMove = handle_computer_move(grid, highlightedPiece, currMove)
+                
         update_display(grid)
 
-
-main(WIDTH, ROWS)
+if __name__ == "__main__":
+    main(WIDTH, ROWS)

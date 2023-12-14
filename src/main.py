@@ -5,9 +5,6 @@ import logic.rules as rules
 from logic.minimax import minimax_for_gui
 
 
-
-
-
 def move(grid, piecePosition, newPosition, currPlayer):
     resetColours(grid, piecePosition, possible_moves.get_all_possible_moves_for_piece_gui, currPlayer=currPlayer)
     game_board = convert_printable_grid_to_array(grid, currPlayer)

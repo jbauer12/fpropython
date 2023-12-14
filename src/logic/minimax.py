@@ -86,5 +86,5 @@ def minimax(state:GameBoard, depth, player):
     return best_score
 
 def minimax_for_gui(state:GameBoard, player):
-    best = minimax(state, 4, player)
+    best = minimax(state, 5, player)
     return result(state, best[0])

@@ -1,0 +1,68 @@
+package minimax
+
+import (
+	"checkers/packages/gameboard"
+	"fmt"
+
+	"github.com/samber/lo"
+)
+
+func opposite(team string, smash bool) string {
+	if smash {
+		return team
+	}
+	if team == "G" {
+		return "R"
+	}
+	return "G"
+}
+
+func Terminal(gameBoard gameboard.GameBoard) bool {
+
+	allPiecesOfTeam := func(team string) bool {
+		return lo.ContainsBy(gameBoard.GameBoard, func(row []gameboard.Piece) bool {
+			return lo.ContainsBy(row, func(piece gameboard.Piece) bool {
+				return piece.Team == team || piece.Team == " "
+			})
+		})
+	}
+
+	allLeftPiecesRed := allPiecesOfTeam("R")
+	fmt.Println(allLeftPiecesRed)
+
+	allLeftPiecesGreen := allPiecesOfTeam("G")
+
+	return allLeftPiecesRed || allLeftPiecesGreen
+}
+
+func ValueFrom(gameBoard gameboard.GameBoard) float64 {
+	positionalWeight := 0.5
+	pieceCountWeight := 5.0
+	kingedPieceWeight := 3.0
+
+	valueFromPiece := func(piece gameboard.Piece) float64 {
+		king := 0.0
+		if piece.King {
+			king = 1.0
+		}
+		return pieceCountWeight + kingedPieceWeight*king + float64(piece.Position.Row)*positionalWeight
+	}
+	filter_function := func(pieces []gameboard.Piece, currPlayer string) []gameboard.Piece {
+		return lo.Filter(pieces, func(piece gameboard.Piece, _ int) bool {
+			return currPlayer == piece.Team
+		})
+	}
+	reduce_function := func(pieces []gameboard.Piece) float64 {
+		return lo.Reduce(pieces, func(agg float64, item gameboard.Piece, _ int) float64 {
+			return agg + valueFromPiece(item)
+		}, 0)
+	}
+
+	flattenBoard := lo.Flatten(gameBoard.GameBoard)
+	p1 := filter_function(flattenBoard, gameBoard.CurrPlayer)
+	playerScore := reduce_function(p1)
+	//TODO Smash funktion einbauen!
+	opponentScore := reduce_function(filter_function(flattenBoard, opposite(gameBoard.CurrPlayer, false)))
+
+	return opponentScore - playerScore
+}

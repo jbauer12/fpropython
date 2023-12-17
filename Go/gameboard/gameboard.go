@@ -3,7 +3,10 @@ package gameboard
 import "fmt"
 
 type Tuple struct {
-	X, Y int
+	Row, Column int
+}
+type Action struct {
+	Start, End Tuple
 }
 
 type Piece struct {
@@ -84,6 +87,7 @@ func GetInitialGameBoard() (GameBoard, error) {
 
 	return GameBoard{
 		GameBoard:  gameBoard,
-		CurrPlayer: "R",
+		CurrPlayer: "G",
 	}, nil
+
 }

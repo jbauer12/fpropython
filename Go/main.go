@@ -2,20 +2,21 @@ package main
 
 import (
 	"bufio"
-	"checkers/packages/gameboard"
-	"checkers/packages/minimax"
-	"checkers/packages/possible_moves"
 	"fmt"
 	"os"
 	"strconv"
 
+	"checkers/packages/gameboard"
+	"checkers/packages/minimax"
+	"checkers/packages/possible_moves"
+
 	"github.com/TwiN/go-color"
 )
 
-func makeArtificialMove(gameBoard gameboard.GameBoard) gameboard.GameBoard {
-	action := minimax.Minimax(gameBoard, 7, gameBoard.CurrPlayer)
+func makeArtificialMove(gameBoard gameboard.GameBoard) (gameboard.GameBoard, error) {
+	action := minimax.Minimax(gameBoard, 5, gameBoard.CurrPlayer)
 	gameBoard = possible_moves.Make_move(gameBoard, action.Action)
-	return gameBoard
+	return gameBoard, nil
 }
 
 func printActions(actions []gameboard.Action) string {
@@ -33,13 +34,12 @@ func getInputFromUser() (int, error) {
 	inputText := scanner.Text()
 	input, err := strconv.Atoi(inputText)
 	if err != nil {
-		fmt.Println("Sie müssen einen Integer wählen aus der obigen Liste.")
+		return 0, fmt.Errorf("Sie müssen einen Integer aus der obigen Liste wählen")
 	}
-
-	return input, err
+	return input, nil
 }
-func makeUserMove(gameBoard gameboard.GameBoard) gameboard.GameBoard {
 
+func makeUserMove(gameBoard gameboard.GameBoard) (gameboard.GameBoard, error) {
 	actions := possible_moves.GetActionsFromPossibleMoves(gameBoard, possible_moves.GetAllPossibleMovesForTeam(gameBoard, gameBoard.CurrPlayer))
 	fmt.Print(printActions(actions))
 	input, err := getInputFromUser()
@@ -52,50 +52,52 @@ func makeUserMove(gameBoard gameboard.GameBoard) gameboard.GameBoard {
 	}
 	action := actions[input]
 	gameBoard = possible_moves.Make_move(gameBoard, action)
-	return gameBoard
+	return gameBoard, nil
+}
 
+func displayWelcomeMessage() {
+	fmt.Print(color.InGreen("\n\n            Willkommen bei Checkers \n"))
+}
+
+func displayBoard(gameBoard gameboard.GameBoard) {
+	var message string
+	if gameBoard.CurrPlayer == "R" {
+		message = color.InRed("\n            Farbe Rot war am Zug \n")
+	} else {
+		message = color.InGreen("\n            Sie sind dran! \n \n")
+	}
+	fmt.Print(gameBoard)
+	fmt.Print(message)
+}
+
+func playGame() {
+	gameBoard, err := gameboard.GetInitialGameBoard()
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	displayWelcomeMessage()
+	for !minimax.Terminal(gameBoard) {
+		if gameBoard.CurrPlayer == "R" {
+			gameBoard, err = makeArtificialMove(gameBoard)
+			showGameBoard := gameboard.GameBoard{GameBoard: gameBoard.GameBoard, CurrPlayer: "R"}
+			displayBoard(showGameBoard)
+			if err != nil {
+				fmt.Println("Error:", err)
+				return
+			}
+		} else {
+			displayBoard(gameBoard)
+			gameBoard, err = makeUserMove(gameBoard)
+			if err != nil {
+				fmt.Println("Error:", err)
+				return
+			}
+		}
+	}
 }
 
 func main() {
-	gameBoard, err := gameboard.GetInitialGameBoard()
-	fmt.Print(color.InGreen("\n\n            Willkommen bei Checkers \n"))
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-	for !minimax.Terminal(gameBoard) {
-		if gameBoard.CurrPlayer == "R" {
-			gameBoard = makeArtificialMove(gameBoard)
-			fmt.Print(color.InRed("\n            Farbe Rot war am Zug \n"))
-			showGameBoard := gameboard.GameBoard{GameBoard: gameBoard.GameBoard, CurrPlayer: "R"}
-			fmt.Print(showGameBoard)
-			fmt.Print("\n\n")
-
-		} else {
-			fmt.Print(gameBoard)
-			fmt.Print(color.InGreen("\n            Sie sind dran! \n \n"))
-			gameBoard = makeUserMove(gameBoard)
-		}
-	}
-
-}
-func main1() {
-	gameBoard, err := gameboard.GetInitialGameBoard()
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-
-	actions := possible_moves.GetActionsFromPossibleMoves(gameBoard, possible_moves.GetAllPossibleMovesForTeam(gameBoard, gameBoard.CurrPlayer))
-	fmt.Print(gameBoard)
-	fmt.Print(printActions(actions))
-	makeUserMove(gameBoard)
-	//gameBoard = possible_moves.Make_move(gameBoard, gameboard.Action{Start: gameboard.Tuple{Row: 5, Column: 1}, End: gameboard.Tuple{Row: 4, Column: 2}})
-	gameBoard = possible_moves.Make_move(gameBoard, gameboard.Action{Start: gameboard.Tuple{Row: 2, Column: 0}, End: gameboard.Tuple{Row: 3, Column: 1}})
-	fmt.Print(gameBoard)
-
-	actions = possible_moves.GetActionsFromPossibleMoves(gameBoard, possible_moves.GetAllPossibleMovesForTeam(gameBoard, gameBoard.CurrPlayer))
-
-	fmt.Print(gameBoard)
-	fmt.Print(printActions(actions))
+	playGame()
 }

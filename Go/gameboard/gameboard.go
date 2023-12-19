@@ -38,17 +38,17 @@ type Piece struct {
 }
 
 func (p Piece) String() string {
-	teamString := p.Team
+	teamString := p.Team + " "
 
 	if p.King {
-		teamString += "K"
+		teamString = p.Team + "K"
 	}
 	if p.Team == "R" {
-		return fmt.Sprintf("%s |", color.InRed(p.Team))
+		return fmt.Sprintf("%s|", color.InRed(teamString))
 	} else if p.Team == "G" {
-		return fmt.Sprintf("%s |", color.InGreen(p.Team))
+		return fmt.Sprintf("%s|", color.InGreen(teamString))
 	} else {
-		return fmt.Sprintf("%s |", teamString)
+		return fmt.Sprintf("%s|", teamString)
 	}
 
 }
@@ -159,34 +159,34 @@ func GetInitialGameBoard() (GameBoard, error) {
 func MakeNewGameBoardAfterMove(gameBoard GameBoard, action Action, smash bool, king bool) GameBoard {
 	piece := gameBoard.GameBoard[action.Start.Row][action.Start.Column]
 
-	piece_function := func(piece Piece, smash bool) func(row int, column int) Piece {
+	piece_function := func(piece Piece, smash bool, king bool) func(row int, column int) Piece {
 		oldrow := piece.Position.Row
 		oldcolumn := piece.Position.Column
 		return func(row int, column int) Piece {
 			team := " "
-			king := false
-			if row == piece.Position.Row && column == piece.Position.Column {
+			king_type := false
+			if row == oldrow && column == oldcolumn {
 				team = " "
-				king = false
+				king_type = false
 			} else if row == action.End.Row && column == action.End.Column {
 				team = piece.Team
-				king = piece.King
+				king_type = king
 			} else if smash && (row == int((oldrow+action.End.Row)/2) && column == int((oldcolumn+action.End.Column)/2)) {
 				team = " "
-				king = false
+				king_type = false
 			} else {
 				team = gameBoard.GameBoard[row][column].Team
-				king = gameBoard.GameBoard[row][column].King
+				king_type = gameBoard.GameBoard[row][column].King
 			}
 
 			return Piece{
 				Position: Tuple{row, column},
 				Team:     team,
-				King:     king,
+				King:     king_type,
 			}
 		}
 	}
-	function_with_piece := piece_function(piece, smash)
+	function_with_piece := piece_function(piece, smash, king)
 	newGameBoard, err := generateBoard(function_with_piece)
 	if err != nil {
 		fmt.Println("Error:", err)

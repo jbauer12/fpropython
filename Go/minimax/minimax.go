@@ -40,30 +40,33 @@ func ValueFrom(gameBoard gameboard.GameBoard) float64 {
 	pieceCountWeight := 5.0
 	kingedPieceWeight := 3.0
 
-	valueFromPiece := func(piece gameboard.Piece) float64 {
-		king := 0.0
-		if piece.King {
-			king = 1.0
+	// Evaluate the board based on the player's perspective
+	evalPlayer := func(player string) float64 {
+		valueFromPiece := func(piece gameboard.Piece) float64 {
+			king := 0.0
+			if piece.King {
+				king = 1.0
+			}
+			return pieceCountWeight + kingedPieceWeight*king + float64(piece.Position.Row)*positionalWeight
 		}
-		return pieceCountWeight + kingedPieceWeight*king + float64(piece.Position.Row)*positionalWeight
-	}
-	filter_function := func(pieces []gameboard.Piece, currPlayer string) []gameboard.Piece {
-		return lo.Filter(pieces, func(piece gameboard.Piece, _ int) bool {
-			return currPlayer == piece.Team
+
+		filteredPieces := lo.Filter(lo.Flatten(gameBoard.GameBoard), func(piece gameboard.Piece, _ int) bool {
+			return player == piece.Team
 		})
-	}
-	reduce_function := func(pieces []gameboard.Piece) float64 {
-		return lo.Reduce(pieces, func(agg float64, item gameboard.Piece, _ int) float64 {
+
+		return lo.Reduce(filteredPieces, func(agg float64, item gameboard.Piece, _ int) float64 {
 			return agg + valueFromPiece(item)
 		}, 0)
 	}
 
-	flattenBoard := lo.Flatten(gameBoard.GameBoard)
-	p1 := filter_function(flattenBoard, gameBoard.CurrPlayer)
-	playerScore := reduce_function(p1)
-	opponentScore := reduce_function(filter_function(flattenBoard, opposite(gameBoard.CurrPlayer, false)))
+	// Evaluate scores for both players
+	playerScore := evalPlayer(gameBoard.CurrPlayer)
+	opponentScore := evalPlayer(opposite(gameBoard.CurrPlayer, false))
+
+	// Return the difference in scores
 	return opponentScore - playerScore
 }
+
 func Player(gameBoard gameboard.GameBoard) string {
 	return gameBoard.CurrPlayer
 }

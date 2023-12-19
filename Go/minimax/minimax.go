@@ -40,7 +40,7 @@ func Terminal(gameBoard gameboard.GameBoard) bool {
 	return allLeftPiecesRed[false] == 0 || allLeftPiecesGreen[false] == 0 || len(moves) == 0
 }
 
-func EvaluateHeuristicValue(gameBoard gameboard.GameBoard) float64 {
+func evaluateHeuristicValue(gameBoard gameboard.GameBoard) float64 {
 	evalPlayer := func(player string) float64 {
 		valueFromPiece := func(piece gameboard.Piece) float64 {
 			king := 0.0
@@ -65,18 +65,14 @@ func EvaluateHeuristicValue(gameBoard gameboard.GameBoard) float64 {
 	return opponentScore - playerScore
 }
 
-func CurrentPlayer(gameBoard gameboard.GameBoard) string {
-	return gameBoard.CurrPlayer
-}
-
-func PossibleActions(gameBoard gameboard.GameBoard, team string) []gameboard.Action {
+func possibleActions(gameBoard gameboard.GameBoard, team string) []gameboard.Action {
 	possibleMovePieces := possible_moves.GetAllPossibleMovesForTeam(gameBoard, team)
 	return possible_moves.GetActionsFromPossibleMoves(gameBoard, possibleMovePieces)
 }
 
-func PerformAction(gameBoard gameboard.GameBoard, action gameboard.Action) gameboard.GameBoard {
+func performAction(gameBoard gameboard.GameBoard, action gameboard.Action) gameboard.GameBoard {
 	if !Terminal(gameBoard) {
-		return possible_moves.Make_move(gameBoard, action)
+		return possible_moves.MakeMove(gameBoard, action)
 	}
 	return gameBoard
 }
@@ -88,12 +84,12 @@ func Minimax(state gameboard.GameBoard, depth int, player string) BestScore {
 	}
 
 	if depth == 0 || Terminal(state) {
-		score := EvaluateHeuristicValue(state)
+		score := evaluateHeuristicValue(state)
 		return BestScore{Action: gameboard.Action{}, Score: score}
 	}
 
-	for _, action := range PossibleActions(state, player) {
-		result := PerformAction(state, action)
+	for _, action := range possibleActions(state, player) {
+		result := performAction(state, action)
 		value := Minimax(result, depth-1, opposite(player, result.CurrPlayer == player))
 
 		if player == "R" && value.Score > bestScore.Score {

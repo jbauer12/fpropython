@@ -18,7 +18,7 @@ func isPieceThereOnRowColumn(piece Piece) bool {
 	return checkIfPositionOutOfBounds(piece.Position) && piece.Team != " "
 }
 
-func GetPossibleMoveVectors(piece Piece, isPieceThere bool) []Tuple {
+func getPossibleMoveVectors(piece Piece, isPieceThere bool) []Tuple {
 	vectorsWhichPieceCanMove := []Tuple{}
 	if isPieceThere && piece.Team != " " {
 		if piece.Team == "R" {
@@ -33,7 +33,7 @@ func GetPossibleMoveVectors(piece Piece, isPieceThere bool) []Tuple {
 	return vectorsWhichPieceCanMove
 }
 
-func FilterWithoutSmash(gameBoard GameBoard, piece Piece, vector Tuple) bool {
+func filterWithoutSmash(gameBoard GameBoard, piece Piece, vector Tuple) bool {
 	row, column := piece.Position.Row, piece.Position.Column
 	rowVector, columnVector := vector.Row-row, vector.Column-column
 	position := Tuple{Row: row + rowVector, Column: column + columnVector}
@@ -41,7 +41,7 @@ func FilterWithoutSmash(gameBoard GameBoard, piece Piece, vector Tuple) bool {
 	return inBound && !isPieceThereOnRowColumn(gameBoard.GameBoard[position.Row][position.Column])
 }
 
-func FilterWithSmash(gameBoard GameBoard, piece Piece, vector Tuple) bool {
+func filterWithSmash(gameBoard GameBoard, piece Piece, vector Tuple) bool {
 	oppositePiecesOnPosition := func(ownPiece, newPositionPiece Piece) bool {
 		return ownPiece.Team != " " && newPositionPiece.Team != " " && ownPiece.Team != newPositionPiece.Team
 	}
@@ -62,7 +62,7 @@ func FilterWithSmash(gameBoard GameBoard, piece Piece, vector Tuple) bool {
 	}
 }
 
-func GetPossibleMoves(smash bool, filterFunction func(GameBoard, Piece, Tuple) bool) func(gameBoard GameBoard, piece Piece, vectorsWhichPieceCanMove []Tuple) []Tuple {
+func getPossibleMoves(smash bool, filterFunction func(GameBoard, Piece, Tuple) bool) func(gameBoard GameBoard, piece Piece, vectorsWhichPieceCanMove []Tuple) []Tuple {
 	return func(gameBoard GameBoard, piece Piece, vectorsWhichPieceCanMove []Tuple) []Tuple {
 		row, column := piece.Position.Row, piece.Position.Column
 		var possiblePositions []Tuple
@@ -85,20 +85,11 @@ func GetPossibleMoves(smash bool, filterFunction func(GameBoard, Piece, Tuple) b
 	}
 }
 
-func GetAllPossibleMovesForPiece(gameBoard GameBoard, piece Piece, possibleMoveFunction PossibleMoveFunction, filterFunction FilterFunction) Piece {
-	vectorsWhichPieceCanMove := GetPossibleMoveVectors(piece, isPieceThereOnRowColumn(piece))
-	if len(vectorsWhichPieceCanMove) > 0 {
-		possiblePositions := possibleMoveFunction(gameBoard, piece, vectorsWhichPieceCanMove)
-		piece.PossiblePositions = possiblePositions
-	}
-	return piece
-}
-
 func GetAllPossibleMovesForTeam(gameBoard GameBoard, team string) []Piece {
-	PossibleMoveFunctionWithSmash := GetPossibleMoves(true, FilterWithSmash)
-	PossibleMoveFunctionWithoutSmash := GetPossibleMoves(false, FilterWithoutSmash)
+	PossibleMoveFunctionWithSmash := getPossibleMoves(true, filterWithSmash)
+	PossibleMoveFunctionWithoutSmash := getPossibleMoves(false, filterWithoutSmash)
 	map_function := func(possibleMoveFunction PossibleMoveFunction, piece Piece) Piece {
-		smashes := possibleMoveFunction(gameBoard, piece, GetPossibleMoveVectors(piece, isPieceThereOnRowColumn(piece)))
+		smashes := possibleMoveFunction(gameBoard, piece, getPossibleMoveVectors(piece, isPieceThereOnRowColumn(piece)))
 		piece.PossiblePositions = smashes
 		return piece
 	}
@@ -125,7 +116,7 @@ func GetAllPossibleMovesForTeam(gameBoard GameBoard, team string) []Piece {
 	}
 }
 
-func Make_move(gameBoard GameBoard, action Action) GameBoard {
+func MakeMove(gameBoard GameBoard, action Action) GameBoard {
 	piece := gameBoard.GameBoard[action.Start.Row][action.Start.Column]
 	king := isPieceCheckerAfterMove(piece, action)
 	smash := isOppositePieceSmashed(action)

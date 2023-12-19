@@ -16,7 +16,7 @@ import (
 // TODO Error handling
 func makeArtificialMove(gameBoard gameboard.GameBoard) (gameboard.GameBoard, error) {
 	action := minimax.Minimax(gameBoard, 5, gameBoard.CurrPlayer)
-	gameBoard = possible_moves.Make_move(gameBoard, action.Action)
+	gameBoard = possible_moves.MakeMove(gameBoard, action.Action)
 	return gameBoard, nil
 }
 
@@ -52,7 +52,7 @@ func makeUserMove(gameBoard gameboard.GameBoard) (gameboard.GameBoard, error) {
 		}
 	}
 	action := actions[input]
-	gameBoard = possible_moves.Make_move(gameBoard, action)
+	gameBoard = possible_moves.MakeMove(gameBoard, action)
 	return gameBoard, nil
 }
 

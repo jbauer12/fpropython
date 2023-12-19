@@ -13,6 +13,7 @@ import (
 	"github.com/TwiN/go-color"
 )
 
+// TODO Error handling
 func makeArtificialMove(gameBoard gameboard.GameBoard) (gameboard.GameBoard, error) {
 	action := minimax.Minimax(gameBoard, 5, gameBoard.CurrPlayer)
 	gameBoard = possible_moves.Make_move(gameBoard, action.Action)

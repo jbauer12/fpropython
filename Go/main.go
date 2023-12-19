@@ -96,6 +96,6 @@ func playGame() {
 }
 
 func main() {
-	fmt.Print(gameboard.GenerateBoardWithCheckerMove())
+	fmt.Print(gameboard.GenerateTerminalBoard("R"))
 	playGame()
 }

@@ -5,9 +5,10 @@ import (
 	"strconv"
 
 	"github.com/TwiN/go-color"
+	"github.com/samber/lo"
 )
 
-type Piece_function func(row, column int) Piece
+type PieceFunction func(row, column int) Piece
 
 type Tuple struct {
 	Row, Column int
@@ -117,23 +118,20 @@ func getPieceWithRightTeam(row, column int) Piece {
 	}
 }
 
-func generateRow(row int, get_piece_with_team_function Piece_function) ([]Piece, error) {
+func generateRow(get_piece_with_team_function PieceFunction, row int) []Piece {
 	pieces := mapRange(8, func(col int) Piece {
 		return get_piece_with_team_function(row, col)
 	})
-	return pieces, nil
+	return pieces
 }
 
-func generateBoard(get_piece_with_team_function Piece_function) ([][]Piece, error) {
+func generateBoard(get_piece_with_team_function PieceFunction) [][]Piece {
 	board := make([][]Piece, 8)
-	for i := range board {
-		row, err := generateRow(i, get_piece_with_team_function)
-		if err != nil {
-			return nil, err
-		}
-		board[i] = row
-	}
-	return board, nil
+	board = lo.Map(board, func(item []Piece, row int) []Piece {
+		return generateRow(get_piece_with_team_function, row)
+	})
+
+	return board
 }
 
 func mapRange(count int, f func(int) Piece) []Piece {
@@ -145,10 +143,7 @@ func mapRange(count int, f func(int) Piece) []Piece {
 }
 
 func GetInitialGameBoard() (GameBoard, error) {
-	gameBoard, err := generateBoard(getPieceWithRightTeam)
-	if err != nil {
-		return GameBoard{}, err
-	}
+	gameBoard := generateBoard(getPieceWithRightTeam)
 
 	return GameBoard{
 		GameBoard:  gameBoard,
@@ -187,12 +182,7 @@ func MakeNewGameBoardAfterMove(gameBoard GameBoard, action Action, smash bool, k
 		}
 	}
 	function_with_piece := piece_function(piece, smash, king)
-	newGameBoard, err := generateBoard(function_with_piece)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return gameBoard
-	}
-
+	newGameBoard := generateBoard(function_with_piece)
 	return GameBoard{GameBoard: newGameBoard, CurrPlayer: opposite(piece.Team, smash)}
 }
 

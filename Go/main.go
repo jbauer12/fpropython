@@ -13,11 +13,10 @@ import (
 	"github.com/TwiN/go-color"
 )
 
-// TODO Error handling
-func makeArtificialMove(gameBoard gameboard.GameBoard) (gameboard.GameBoard, error) {
+func makeArtificialMove(gameBoard gameboard.GameBoard) gameboard.GameBoard {
 	action := minimax.Minimax(gameBoard, 5, gameBoard.CurrPlayer)
 	gameBoard = possible_moves.MakeMove(gameBoard, action.Action)
-	return gameBoard, nil
+	return gameBoard
 }
 
 func printActions(actions []gameboard.Action) string {
@@ -77,18 +76,15 @@ func playGame() {
 		fmt.Println("Error:", err)
 		return
 	}
-
 	displayWelcomeMessage()
 	for !minimax.Terminal(gameBoard) {
 		if gameBoard.CurrPlayer == "R" {
-			gameBoard, err = makeArtificialMove(gameBoard)
+			gameBoard = makeArtificialMove(gameBoard)
 			showGameBoard := gameboard.GameBoard{GameBoard: gameBoard.GameBoard, CurrPlayer: "R"}
 			displayBoard(showGameBoard)
-			if err != nil {
-				fmt.Println("Error:", err)
-				return
-			}
+
 		} else {
+
 			displayBoard(gameBoard)
 			gameBoard, err = makeUserMove(gameBoard)
 			if err != nil {
@@ -100,5 +96,6 @@ func playGame() {
 }
 
 func main() {
+	fmt.Print(gameboard.GenerateBoardWithCheckerMove())
 	playGame()
 }

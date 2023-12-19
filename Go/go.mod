@@ -3,6 +3,7 @@ module checkers/packages
 go 1.21.5
 
 require (
+	github.com/TwiN/go-color v1.4.1 // indirect
 	github.com/cilium/ebpf v0.12.3 // indirect
 	github.com/cosiner/argv v0.1.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect

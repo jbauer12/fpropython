@@ -3,7 +3,6 @@ package minimax
 import (
 	"checkers/packages/gameboard"
 	"checkers/packages/possible_moves"
-	"fmt"
 
 	"github.com/samber/lo"
 )
@@ -25,20 +24,15 @@ func opposite(team string, smash bool) string {
 
 func Terminal(gameBoard gameboard.GameBoard) bool {
 
-	allPiecesOfTeam := func(team string) bool {
-		return lo.ContainsBy(gameBoard.GameBoard, func(row []gameboard.Piece) bool {
-			return lo.ContainsBy(row, func(piece gameboard.Piece) bool {
-				return piece.Team == team || piece.Team == " "
-			})
-		})
-	}
-
-	allLeftPiecesRed := allPiecesOfTeam("R")
-	fmt.Println(allLeftPiecesRed)
-
-	allLeftPiecesGreen := allPiecesOfTeam("G")
-
-	return allLeftPiecesRed || allLeftPiecesGreen
+	pieces := lo.Flatten(gameBoard.GameBoard)
+	allLeftPiecesRed := lo.CountValuesBy(pieces, func(piece gameboard.Piece) bool {
+		return piece.Team == "R" || piece.Team == " "
+	})
+	allLeftPiecesGreen := lo.CountValuesBy(pieces, func(piece gameboard.Piece) bool {
+		return piece.Team == "G" || piece.Team == " "
+	})
+	moves := possible_moves.GetAllPossibleMovesForTeam(gameBoard, gameBoard.CurrPlayer)
+	return allLeftPiecesRed[false] == 0 || allLeftPiecesGreen[false] == 0 || len(moves) == 0
 }
 
 func ValueFrom(gameBoard gameboard.GameBoard) float64 {
@@ -67,16 +61,15 @@ func ValueFrom(gameBoard gameboard.GameBoard) float64 {
 	flattenBoard := lo.Flatten(gameBoard.GameBoard)
 	p1 := filter_function(flattenBoard, gameBoard.CurrPlayer)
 	playerScore := reduce_function(p1)
-	//TODO Smash funktion einbauen!
 	opponentScore := reduce_function(filter_function(flattenBoard, opposite(gameBoard.CurrPlayer, false)))
-
 	return opponentScore - playerScore
 }
 func Player(gameBoard gameboard.GameBoard) string {
 	return gameBoard.CurrPlayer
 }
 func Actions(gameBoard gameboard.GameBoard, team string) []gameboard.Action {
-	possible_moves := possible_moves.Get_all_possible_moves_for_team(gameBoard, team)
+	possible_move_pieces := possible_moves.GetAllPossibleMovesForTeam(gameBoard, team)
+	possible_moves := possible_moves.GetActionsFromPossibleMoves(gameBoard, possible_move_pieces)
 	return possible_moves
 }
 func Result(gameBoard gameboard.GameBoard, action gameboard.Action) gameboard.GameBoard {

@@ -96,6 +96,5 @@ func playGame() {
 }
 
 func main() {
-	fmt.Print(gameboard.GenerateTerminalBoard("R"))
 	playGame()
 }

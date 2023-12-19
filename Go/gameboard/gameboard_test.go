@@ -94,29 +94,29 @@ func TestOpposite(t *testing.T) {
 func GenerateBoardWithSmash() GameBoard {
 	gameBoard := [][]Piece{
 		// Row 0
-		{Piece{Position: Tuple{0, 0}, Team: " ", King: false}, Piece{Position: Tuple{0, 1}, Team: " ", King: false}, getPieceWithRightTeam(0, 2), Piece{Position: Tuple{0, 3}, Team: " ", King: false},
-			getPieceWithRightTeam(0, 4), Piece{Position: Tuple{0, 5}, Team: " ", King: false}, Piece{Position: Tuple{0, 6}, Team: " ", King: false}, Piece{Position: Tuple{0, 7}, Team: " ", King: false}},
+		{Piece{Position: Tuple{0, 0}, Team: " ", King: false}, Piece{Position: Tuple{0, 1}, Team: " ", King: false}, GetPieceWithRightTeam(0, 2), Piece{Position: Tuple{0, 3}, Team: " ", King: false},
+			GetPieceWithRightTeam(0, 4), Piece{Position: Tuple{0, 5}, Team: " ", King: false}, Piece{Position: Tuple{0, 6}, Team: " ", King: false}, Piece{Position: Tuple{0, 7}, Team: " ", King: false}},
 		// Row 1
-		{Piece{Position: Tuple{1, 0}, Team: " ", King: false}, getPieceWithRightTeam(1, 1), Piece{Position: Tuple{1, 2}, Team: " ", King: false}, Piece{Position: Tuple{1, 3}, Team: " ", King: false},
+		{Piece{Position: Tuple{1, 0}, Team: " ", King: false}, GetPieceWithRightTeam(1, 1), Piece{Position: Tuple{1, 2}, Team: " ", King: false}, Piece{Position: Tuple{1, 3}, Team: " ", King: false},
 			Piece{Position: Tuple{1, 4}, Team: " ", King: false}, Piece{Position: Tuple{1, 5}, Team: " ", King: false}, Piece{Position: Tuple{1, 6}, Team: " ", King: false}, Piece{Position: Tuple{1, 7}, Team: " ", King: false}},
 		// Row 2
-		{getPieceWithRightTeam(2, 0), Piece{Position: Tuple{2, 1}, Team: " ", King: false}, getPieceWithRightTeam(2, 2), Piece{Position: Tuple{2, 3}, Team: " ", King: false},
+		{GetPieceWithRightTeam(2, 0), Piece{Position: Tuple{2, 1}, Team: " ", King: false}, GetPieceWithRightTeam(2, 2), Piece{Position: Tuple{2, 3}, Team: " ", King: false},
 			Piece{Position: Tuple{2, 4}, Team: " ", King: false}, Piece{Position: Tuple{2, 5}, Team: " ", King: false}, Piece{Position: Tuple{2, 6}, Team: " ", King: false}, Piece{Position: Tuple{2, 7}, Team: " ", King: false}},
 		// Row 3
-		{Piece{Position: Tuple{3, 0}, Team: " ", King: false}, Piece{Position: Tuple{3, 1}, Team: " ", King: false}, getPieceWithRightTeam(3, 2), Piece{Position: Tuple{3, 3}, Team: " ", King: false},
+		{Piece{Position: Tuple{3, 0}, Team: " ", King: false}, Piece{Position: Tuple{3, 1}, Team: " ", King: false}, GetPieceWithRightTeam(3, 2), Piece{Position: Tuple{3, 3}, Team: " ", King: false},
 			Piece{Position: Tuple{3, 4}, Team: " ", King: false}, Piece{Position: Tuple{3, 5}, Team: " ", King: false}, Piece{Position: Tuple{3, 6}, Team: " ", King: false}, Piece{Position: Tuple{3, 7}, Team: " ", King: false}},
 		// Row 4
-		{Piece{Position: Tuple{4, 0}, Team: " ", King: false}, getPieceWithRightTeam(4, 1), Piece{Position: Tuple{4, 2}, Team: "R", King: false}, Piece{Position: Tuple{4, 3}, Team: " ", King: false},
+		{Piece{Position: Tuple{4, 0}, Team: " ", King: false}, GetPieceWithRightTeam(4, 1), Piece{Position: Tuple{4, 2}, Team: "R", King: false}, Piece{Position: Tuple{4, 3}, Team: " ", King: false},
 			Piece{Position: Tuple{4, 4}, Team: " ", King: false}, Piece{Position: Tuple{4, 5}, Team: " ", King: false}, Piece{Position: Tuple{4, 6}, Team: " ", King: false}, Piece{Position: Tuple{4, 7}, Team: " ", King: false}},
 		// Row 5
-		{getPieceWithRightTeam(5, 0), Piece{Position: Tuple{5, 1}, Team: " ", King: false}, Piece{Position: Tuple{5, 2}, Team: " ", King: false}, getPieceWithRightTeam(5, 3),
-			Piece{Position: Tuple{5, 4}, Team: " ", King: false}, getPieceWithRightTeam(5, 5), Piece{Position: Tuple{5, 6}, Team: " ", King: false}, getPieceWithRightTeam(5, 7)},
+		{GetPieceWithRightTeam(5, 0), Piece{Position: Tuple{5, 1}, Team: " ", King: false}, Piece{Position: Tuple{5, 2}, Team: " ", King: false}, GetPieceWithRightTeam(5, 3),
+			Piece{Position: Tuple{5, 4}, Team: " ", King: false}, GetPieceWithRightTeam(5, 5), Piece{Position: Tuple{5, 6}, Team: " ", King: false}, GetPieceWithRightTeam(5, 7)},
 		// Row 6
-		{Piece{Position: Tuple{6, 0}, Team: " ", King: false}, getPieceWithRightTeam(6, 1), Piece{Position: Tuple{6, 2}, Team: " ", King: false}, Piece{Position: Tuple{6, 3}, Team: " ", King: false},
+		{Piece{Position: Tuple{6, 0}, Team: " ", King: false}, GetPieceWithRightTeam(6, 1), Piece{Position: Tuple{6, 2}, Team: " ", King: false}, Piece{Position: Tuple{6, 3}, Team: " ", King: false},
 			Piece{Position: Tuple{6, 4}, Team: " ", King: false}, Piece{Position: Tuple{6, 5}, Team: " ", King: false}, Piece{Position: Tuple{6, 6}, Team: " ", King: false}, Piece{Position: Tuple{6, 7}, Team: " ", King: false}},
 		// Row 7
-		{getPieceWithRightTeam(7, 0), Piece{Position: Tuple{7, 1}, Team: " ", King: false}, getPieceWithRightTeam(7, 2), Piece{Position: Tuple{7, 3}, Team: " ", King: false},
-			getPieceWithRightTeam(7, 4), getPieceWithRightTeam(7, 5), getPieceWithRightTeam(7, 6), getPieceWithRightTeam(7, 7)},
+		{GetPieceWithRightTeam(7, 0), Piece{Position: Tuple{7, 1}, Team: " ", King: false}, GetPieceWithRightTeam(7, 2), Piece{Position: Tuple{7, 3}, Team: " ", King: false},
+			GetPieceWithRightTeam(7, 4), GetPieceWithRightTeam(7, 5), GetPieceWithRightTeam(7, 6), GetPieceWithRightTeam(7, 7)},
 	}
 
 	return GameBoard{
@@ -128,29 +128,29 @@ func GenerateBoardWithSmash() GameBoard {
 func GenerateBoardWithCheckerMove(CurrPlayer string) GameBoard {
 	gameBoard := [][]Piece{
 		// Row 0
-		{Piece{Position: Tuple{0, 0}, Team: " ", King: false}, Piece{Position: Tuple{0, 1}, Team: " ", King: false}, getPieceWithRightTeam(0, 2), Piece{Position: Tuple{0, 3}, Team: " ", King: false},
-			getPieceWithRightTeam(0, 4), Piece{Position: Tuple{0, 5}, Team: " ", King: false}, Piece{Position: Tuple{0, 6}, Team: " ", King: false}, Piece{Position: Tuple{0, 7}, Team: " ", King: false}},
+		{Piece{Position: Tuple{0, 0}, Team: " ", King: false}, Piece{Position: Tuple{0, 1}, Team: " ", King: false}, GetPieceWithRightTeam(0, 2), Piece{Position: Tuple{0, 3}, Team: " ", King: false},
+			GetPieceWithRightTeam(0, 4), Piece{Position: Tuple{0, 5}, Team: " ", King: false}, Piece{Position: Tuple{0, 6}, Team: " ", King: false}, Piece{Position: Tuple{0, 7}, Team: " ", King: false}},
 		// Row 1
-		{Piece{Position: Tuple{1, 0}, Team: " ", King: false}, getPieceWithRightTeam(1, 1), Piece{Position: Tuple{1, 2}, Team: " ", King: false}, Piece{Position: Tuple{1, 3}, Team: " ", King: false},
+		{Piece{Position: Tuple{1, 0}, Team: " ", King: false}, GetPieceWithRightTeam(1, 1), Piece{Position: Tuple{1, 2}, Team: " ", King: false}, Piece{Position: Tuple{1, 3}, Team: " ", King: false},
 			Piece{Position: Tuple{1, 4}, Team: " ", King: false}, Piece{Position: Tuple{1, 5}, Team: " ", King: false}, Piece{Position: Tuple{1, 6}, Team: "G", King: false}, Piece{Position: Tuple{1, 7}, Team: " ", King: false}},
 		// Row 2
-		{getPieceWithRightTeam(2, 0), Piece{Position: Tuple{2, 1}, Team: " ", King: false}, getPieceWithRightTeam(2, 2), Piece{Position: Tuple{2, 3}, Team: " ", King: false},
+		{GetPieceWithRightTeam(2, 0), Piece{Position: Tuple{2, 1}, Team: " ", King: false}, GetPieceWithRightTeam(2, 2), Piece{Position: Tuple{2, 3}, Team: " ", King: false},
 			Piece{Position: Tuple{2, 4}, Team: " ", King: false}, Piece{Position: Tuple{2, 5}, Team: " ", King: false}, Piece{Position: Tuple{2, 6}, Team: " ", King: false}, Piece{Position: Tuple{2, 7}, Team: " ", King: false}},
 		// Row 3
-		{Piece{Position: Tuple{3, 0}, Team: " ", King: false}, Piece{Position: Tuple{3, 1}, Team: " ", King: false}, getPieceWithRightTeam(3, 2), Piece{Position: Tuple{3, 3}, Team: " ", King: false},
+		{Piece{Position: Tuple{3, 0}, Team: " ", King: false}, Piece{Position: Tuple{3, 1}, Team: " ", King: false}, GetPieceWithRightTeam(3, 2), Piece{Position: Tuple{3, 3}, Team: " ", King: false},
 			Piece{Position: Tuple{3, 4}, Team: " ", King: false}, Piece{Position: Tuple{3, 5}, Team: " ", King: false}, Piece{Position: Tuple{3, 6}, Team: " ", King: false}, Piece{Position: Tuple{3, 7}, Team: " ", King: false}},
 		// Row 4
-		{Piece{Position: Tuple{4, 0}, Team: " ", King: false}, getPieceWithRightTeam(4, 1), Piece{Position: Tuple{4, 2}, Team: " ", King: false}, Piece{Position: Tuple{4, 3}, Team: " ", King: false},
+		{Piece{Position: Tuple{4, 0}, Team: " ", King: false}, GetPieceWithRightTeam(4, 1), Piece{Position: Tuple{4, 2}, Team: " ", King: false}, Piece{Position: Tuple{4, 3}, Team: " ", King: false},
 			Piece{Position: Tuple{4, 4}, Team: " ", King: false}, Piece{Position: Tuple{4, 5}, Team: " ", King: false}, Piece{Position: Tuple{4, 6}, Team: " ", King: false}, Piece{Position: Tuple{4, 7}, Team: " ", King: false}},
 		// Row 5
-		{getPieceWithRightTeam(5, 0), Piece{Position: Tuple{5, 1}, Team: " ", King: false}, Piece{Position: Tuple{5, 2}, Team: " ", King: false}, getPieceWithRightTeam(5, 3),
-			Piece{Position: Tuple{5, 4}, Team: " ", King: false}, getPieceWithRightTeam(5, 5), Piece{Position: Tuple{5, 6}, Team: " ", King: false}, getPieceWithRightTeam(5, 7)},
+		{GetPieceWithRightTeam(5, 0), Piece{Position: Tuple{5, 1}, Team: " ", King: false}, Piece{Position: Tuple{5, 2}, Team: " ", King: false}, GetPieceWithRightTeam(5, 3),
+			Piece{Position: Tuple{5, 4}, Team: " ", King: false}, GetPieceWithRightTeam(5, 5), Piece{Position: Tuple{5, 6}, Team: " ", King: false}, GetPieceWithRightTeam(5, 7)},
 		// Row 6
-		{Piece{Position: Tuple{6, 0}, Team: "R", King: false}, getPieceWithRightTeam(6, 1), Piece{Position: Tuple{6, 2}, Team: " ", King: false}, Piece{Position: Tuple{6, 3}, Team: " ", King: false},
+		{Piece{Position: Tuple{6, 0}, Team: "R", King: false}, GetPieceWithRightTeam(6, 1), Piece{Position: Tuple{6, 2}, Team: " ", King: false}, Piece{Position: Tuple{6, 3}, Team: " ", King: false},
 			Piece{Position: Tuple{6, 4}, Team: " ", King: false}, Piece{Position: Tuple{6, 5}, Team: " ", King: false}, Piece{Position: Tuple{6, 6}, Team: " ", King: false}, Piece{Position: Tuple{6, 7}, Team: " ", King: false}},
 		// Row 7
-		{getPieceWithRightTeam(7, 0), Piece{Position: Tuple{7, 1}, Team: " ", King: false}, getPieceWithRightTeam(7, 2), Piece{Position: Tuple{7, 3}, Team: " ", King: false},
-			getPieceWithRightTeam(7, 4), getPieceWithRightTeam(7, 5), getPieceWithRightTeam(7, 6), getPieceWithRightTeam(7, 7)},
+		{GetPieceWithRightTeam(7, 0), Piece{Position: Tuple{7, 1}, Team: " ", King: false}, GetPieceWithRightTeam(7, 2), Piece{Position: Tuple{7, 3}, Team: " ", King: false},
+			GetPieceWithRightTeam(7, 4), GetPieceWithRightTeam(7, 5), GetPieceWithRightTeam(7, 6), GetPieceWithRightTeam(7, 7)},
 	}
 
 	return GameBoard{

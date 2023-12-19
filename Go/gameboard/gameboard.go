@@ -104,7 +104,7 @@ func (g GameBoard) String() string {
 
 }
 
-func getPieceWithRightTeam(row, column int) Piece {
+func GetPieceWithRightTeam(row, column int) Piece {
 	team := " "
 	if (row+column)%2 == 0 && row < 3 {
 		team = "R"
@@ -143,7 +143,7 @@ func mapRange(count int, f func(int) Piece) []Piece {
 }
 
 func GetInitialGameBoard() (GameBoard, error) {
-	gameBoard := generateBoard(getPieceWithRightTeam)
+	gameBoard := generateBoard(GetPieceWithRightTeam)
 
 	return GameBoard{
 		GameBoard:  gameBoard,

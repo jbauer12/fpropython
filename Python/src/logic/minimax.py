@@ -27,7 +27,6 @@ def value_from(game_board: GameBoard):
         for piece in row
         if piece.team == game_board.currPlayer
     )
-    print(player_score)
 
     opponent_score = sum(
         value_from_piece(piece, positional_weight=0.5)
@@ -35,7 +34,6 @@ def value_from(game_board: GameBoard):
         for piece in row
         if piece.team != " " and piece.team != game_board.currPlayer
     )
-    print(opponent_score)
 
     return opponent_score - player_score
 
@@ -90,7 +88,3 @@ def minimax(state:GameBoard, depth, player):
 def minimax_for_gui(state:GameBoard, player):
     best = minimax(state, 5, player)
     return result(state, best[0])
-
-
-game_board = get_initial_game_board()
-print(value_from(game_board))

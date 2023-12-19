@@ -19,11 +19,11 @@ pygame.display.set_caption('Checkers')
 
 
 class Image(Enum):
-    RED = pygame.image.load('src/static/red_new.png')
-    GREEN = pygame.image.load('src/static/green.png')
+    RED = pygame.image.load('Python/src/static/red_new.png')
+    GREEN = pygame.image.load('Python/src/static/green.png')
 
-    REDKING = pygame.image.load('src/static/red_dame.png')
-    GREENKING = pygame.image.load('src/static/green_dame.png')
+    REDKING = pygame.image.load('Python/src/static/red_dame.png')
+    GREENKING = pygame.image.load('Python/src/static/green_dame.png')
 
 class Node:
     def __init__(self, row, col, width):

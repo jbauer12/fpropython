@@ -17,10 +17,12 @@ pip install virtualenv
 ```
 After that instantiate and activate the new virtual environment.
 ```bash
+#If not already installed
+pip install virtualenv
+
 # Instantiate virtualenv called .venv
 cd Python
 python3 -m venv .venv
-cd ..
 
 #Activate the virtualenv
 
@@ -32,6 +34,7 @@ source .venv/bin/activate
 
 # Install all requirements for running the code 
 pip install -r requirements.txt
+cd ..
 
 ```
 

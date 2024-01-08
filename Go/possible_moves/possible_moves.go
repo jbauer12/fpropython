@@ -120,7 +120,7 @@ func MakeMove(gameBoard GameBoard, action Action) GameBoard {
 	piece := gameBoard.GameBoard[action.Start.Row][action.Start.Column]
 	king := isPieceCheckerAfterMove(piece, action)
 	smash := isOppositePieceSmashed(action)
-	new_game_board := MakeNewGameBoardAfterMove(gameBoard, action, smash, king)
+	new_game_board := gameBoard.MakeNewGameBoardAfterMove(action, smash, king)
 	return new_game_board
 }
 func GetActionsFromPossibleMoves(gameBoard GameBoard, possibleMoves []Piece) []Action {

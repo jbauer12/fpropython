@@ -36,7 +36,7 @@ func TestMakeNewGameBoardAfterMove(t *testing.T) {
 
 	smash := false
 	king := false
-	newGameBoard := MakeNewGameBoardAfterMove(initialGameBoard, action, smash, king)
+	newGameBoard := initialGameBoard.MakeNewGameBoardAfterMove(action, smash, king)
 
 	assert.NotEqual(t, initialGameBoard, newGameBoard, "Expected new game board to be different from the initial game board")
 	assert.NotEqual(t, initialGameBoard.CurrPlayer, newGameBoard.CurrPlayer, "Expected new game board to have the same current player as the initial game board")
@@ -50,7 +50,7 @@ func TestMakeNewGameBoardAfterMove(t *testing.T) {
 	smash = true
 	king = false
 	action = Action{Start: Tuple{4, 2}, End: Tuple{6, 4}}
-	newGameBoard = MakeNewGameBoardAfterMove(smash_board, action, smash, king)
+	newGameBoard = smash_board.MakeNewGameBoardAfterMove(action, smash, king)
 	assert.Equal(t, newGameBoard.GameBoard[4][2], Piece{Position: Tuple{4, 2}, Team: " ", King: false}, "Expected new game board to have no piece at the start position")
 	assert.Equal(t, newGameBoard.GameBoard[5][3], Piece{Position: Tuple{5, 3}, Team: " ", King: false}, "Expected new game board to have no piece at the intermediate position")
 	assert.Equal(t, newGameBoard.GameBoard[6][4], Piece{Position: Tuple{6, 4}, Team: "R", King: false}, "Expected new game board to have a piece at the end position")
@@ -62,14 +62,14 @@ func TestMakeNewGameBoardAfterMove(t *testing.T) {
 	king = true
 	smash = false
 	action = Action{Start: Tuple{6, 0}, End: Tuple{7, 1}}
-	newGameBoard = MakeNewGameBoardAfterMove(king_board, action, smash, king)
+	newGameBoard = king_board.MakeNewGameBoardAfterMove(action, smash, king)
 	assert.Equal(t, newGameBoard.GameBoard[6][0], Piece{Position: Tuple{6, 0}, Team: " ", King: false}, "Expected new game board to have no piece at the start position")
 	assert.Equal(t, newGameBoard.GameBoard[7][1], Piece{Position: Tuple{7, 1}, Team: "R", King: true}, "Expected new game board to have a piece at the end position")
 	king_board = GenerateBoardWithCheckerMove("G")
 	king = true
 	smash = false
 	action = Action{Start: Tuple{1, 6}, End: Tuple{0, 7}}
-	newGameBoard = MakeNewGameBoardAfterMove(king_board, action, smash, king)
+	newGameBoard = king_board.MakeNewGameBoardAfterMove(action, smash, king)
 	assert.Equal(t, newGameBoard.GameBoard[1][6], Piece{Position: Tuple{1, 6}, Team: " ", King: false}, "Expected new game board to have no piece at the start position")
 	assert.Equal(t, newGameBoard.GameBoard[0][7], Piece{Position: Tuple{0, 7}, Team: "G", King: true}, "Expected new game board to have a piece at the end position")
 }

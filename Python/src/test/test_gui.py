@@ -1,4 +1,3 @@
-import pytest
 from logic.classes import Piece as logicPiece
 from logic.classes import GameBoard
 from logic.gui import convert_array_to_printable_grid, ROWS, convert_printable_grid_to_array

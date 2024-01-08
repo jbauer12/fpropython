@@ -125,9 +125,9 @@ func generateRow(get_piece_with_team_function PieceFunction, row int) []Piece {
 	return pieces
 }
 
-func generateBoard(get_piece_with_team_function PieceFunction) [][]Piece {
-	board := make([][]Piece, 8)
-	board = lo.Map(board, func(item []Piece, row int) []Piece {
+func (gameboard GameBoard) generateBoard(get_piece_with_team_function PieceFunction) [][]Piece {
+
+	board := lo.Map(gameboard.GameBoard, func(item []Piece, row int) []Piece {
 		return generateRow(get_piece_with_team_function, row)
 	})
 
@@ -143,7 +143,7 @@ func mapRange(count int, f func(int) Piece) []Piece {
 }
 
 func GetInitialGameBoard() (GameBoard, error) {
-	gameBoard := generateBoard(GetPieceWithRightTeam)
+	gameBoard := GameBoard{GameBoard: make([][]Piece, 8)}.generateBoard(GetPieceWithRightTeam)
 
 	return GameBoard{
 		GameBoard:  gameBoard,
@@ -151,8 +151,8 @@ func GetInitialGameBoard() (GameBoard, error) {
 	}, nil
 
 }
-func MakeNewGameBoardAfterMove(gameBoard GameBoard, action Action, smash bool, king bool) GameBoard {
-	piece := gameBoard.GameBoard[action.Start.Row][action.Start.Column]
+func (gameboard GameBoard) MakeNewGameBoardAfterMove(action Action, smash bool, king bool) GameBoard {
+	piece := gameboard.GameBoard[action.Start.Row][action.Start.Column]
 
 	piece_function := func(piece Piece, smash bool, king bool) func(row int, column int) Piece {
 		oldrow := piece.Position.Row
@@ -170,8 +170,7 @@ func MakeNewGameBoardAfterMove(gameBoard GameBoard, action Action, smash bool, k
 				team = " "
 				king_type = false
 			} else {
-				team = gameBoard.GameBoard[row][column].Team
-				king_type = gameBoard.GameBoard[row][column].King
+				return gameboard.GameBoard[row][column]
 			}
 
 			return Piece{
@@ -182,7 +181,7 @@ func MakeNewGameBoardAfterMove(gameBoard GameBoard, action Action, smash bool, k
 		}
 	}
 	function_with_piece := piece_function(piece, smash, king)
-	newGameBoard := generateBoard(function_with_piece)
+	newGameBoard := gameboard.generateBoard(function_with_piece)
 	return GameBoard{GameBoard: newGameBoard, CurrPlayer: opposite(piece.Team, smash)}
 }
 

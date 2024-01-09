@@ -13,31 +13,30 @@ The essay (which is also in this repository) aims firstly to introduce the basic
 
 <img src="./pictures_readme/Startgame.png" alt="Starting a game" width="320">
 
-![Starting a game](pictures_readme/Startgame.png){width=200px}
 ## Rules
 
 
 - A move consists of moving a piece diagonally to an adjacent unoccupied square. 
 
-![Possible Moves](pictures_readme/normal_move.png)
+<img src="./pictures_readme/normal_move.png" alt="Starting a game" width="320">
 
 
 
 - If there is an opponent's piece in the adjacent square and the square immediately behind it is vacant, the piece must be captured and removed from the game by jumping over it. After the smashing, the same player has the turn.
 
-![Smashing a Piece](pictures_readme/smashing.png)
+<img src="./pictures_readme/smashing.png" alt="Starting a game" width="320">
 
 - If a player either has no pieces left or cannot move due to being blocked, he loses the game.
 
-![Losing](pictures_readme/losing.png)
+<img src="./pictures_readme/losing.png" alt="Starting a game" width="320">
 
 - If a player get to the opposite base line then he gets a Checker (Dame). 
-![Dame](pictures_readme/dame.png)
+<img src="./pictures_readme/dame.png" alt="Starting a game" width="320">
 
 
 - A Checker can go in every direction, whereas a normal piece can only go 
 in one direction
-![Dame Move](pictures_readme/dame_move.png)
+<img src="./pictures_readme/dame_move.png" alt="Starting a game" width="320">
 # How to use this code 
 
 In the subdirectories (Python and Go) there is another README file that explains how to run the code. 

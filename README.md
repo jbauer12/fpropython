@@ -29,6 +29,7 @@ The essay (which is also in this repository) aims firstly to introduce the basic
 - If a player either has no pieces left or cannot move due to being blocked, he loses the game.
 
 ![Losing](pictures_readme/losing.png)
+
 - If a player get to the opposite base line then he gets a Checker (Dame). 
 ![Dame](pictures_readme/dame.png)
 

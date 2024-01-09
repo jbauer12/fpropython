@@ -37,6 +37,6 @@ The essay (which is also in this repository) aims firstly to introduce the basic
 - A Checker can go in every direction, whereas a normal piece can only go 
 in one direction
 <img src="./pictures_readme/dame_move.png" alt="Starting a game" width="320">
-# How to use this code 
+## How to use this code 
 
 In the subdirectories (Python and Go) there is another README file that explains how to run the code. 

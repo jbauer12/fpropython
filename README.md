@@ -2,7 +2,7 @@
 ## Using the [Minimax](https://de.wikipedia.org/wiki/Minimax-Algorithmus) algorithm with the [Checkers](https://en.wikipedia.org/wiki/Checkers) board game as an example 
 
 ## Purpose
-The purpose of this repository is to show how functional concepts can be implemented in the two languages Python and Golang. Therefore, the same use case is implemented in both languages. 
+The purpose of this repository is to show how functional concepts can be implemented in the two languages Python and Go. Therefore, the same use case is implemented in both languages. 
 The essay (which is also in this repository) aims firstly to introduce the basic concepts of functional programming. Second, how it can be implemented in Go or Python. Third, to compare these implementation techniques with each other.  
 
 

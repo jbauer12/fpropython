@@ -23,3 +23,18 @@ def test_terminal():
     game_board = get_testing_game_board()
     terminal_state = terminal(game_board)
     assert terminal_state == False  
+
+
+def test_opposite():
+    from logic.minimax import opposite
+    assert opposite("R", True) == "R"
+    assert opposite("G", True) == "G"
+    assert opposite("R", False) == "G"
+    assert opposite("G", False) == "R"
+
+def test_value_from():
+    from logic.minimax import value_from
+    game_board = get_testing_game_board(only_red=True)
+    assert value_from(game_board) != 0
+    game_board = get_testing_game_board(only_green=True)
+    assert value_from(game_board) != 0

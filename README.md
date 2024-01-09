@@ -11,8 +11,7 @@ The essay (which is also in this repository) aims firstly to introduce the basic
 
 - The green player (you) moves first, then the players take turns. 
 
-![Starting a game](pictures_readme/Startgame.png)
-
+![Starting a game](pictures_readme/Startgame.png){width=200px}
 ## Rules
 
 

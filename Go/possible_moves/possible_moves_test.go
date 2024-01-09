@@ -9,6 +9,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestIsPieceCheckerAfterMove(t *testing.T) {
+
+	gameBoard := GenerateBoardWithSmash()
+	gameBoard.GameBoard[1][1] = Piece{Position: Tuple{Row: 1, Column: 1}, Team: "G", King: false}
+	gameBoard.CurrPlayer = "G"
+	new_gameBoard := MakeMove(gameBoard, gameboard.Action{Start: Tuple{Row: 1, Column: 1}, End: Tuple{Row: 0, Column: 0}})
+	assert.True(t, new_gameBoard.GameBoard[0][0].King, "Piece should be a king after move")
+	new_gameBoard = MakeMove(gameBoard, gameboard.Action{Start: Tuple{Row: 5, Column: 5}, End: Tuple{Row: 4, Column: 6}})
+	assert.False(t, new_gameBoard.GameBoard[4][6].King, "Piece should not be a king after move")
+
+}
+
 func TestCheckIfPositionOutOfBounds(t *testing.T) {
 	assert.True(t, checkIfPositionOutOfBounds(Tuple{Row: 3, Column: 5}))
 	assert.False(t, checkIfPositionOutOfBounds(Tuple{Row: -1, Column: 5}))

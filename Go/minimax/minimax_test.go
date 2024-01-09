@@ -2,6 +2,7 @@ package minimax
 
 import (
 	"checkers/packages/gameboard"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -82,6 +83,81 @@ func TestEvaluateHeuristicValue(t *testing.T) {
 		result := evaluateHeuristicValue(test.gameBoard)
 		assert.Equal(t, result, test.expected, "Test case: %s", test.description)
 	}
+}
+
+func TestPerformAction(t *testing.T) {
+	gameBoard := generateTerminalBoard("R")
+
+	g := gameboard.GameBoard{
+		GameBoard:  gameBoard,
+		CurrPlayer: "G"}
+	new_game_board := performAction(g, gameboard.Action{Start: gameboard.Tuple{Row: 0, Column: 0}, End: gameboard.Tuple{Row: 1, Column: 1}})
+	assert.Equal(t, gameBoard, new_game_board.GameBoard, "Test case: %s", "performAction")
+
+	gameBoard = initialGameBoard.GameBoard
+	g = gameboard.GameBoard{
+		GameBoard:  gameBoard,
+		CurrPlayer: "R"}
+	fmt.Print(new_game_board)
+
+	new_game_board = performAction(g, gameboard.Action{Start: gameboard.Tuple{Row: 0, Column: 0}, End: gameboard.Tuple{Row: 1, Column: 1}})
+	assert.NotEqual(t, gameBoard, new_game_board.GameBoard, "Test case: %s", "performAction")
+}
+
+func TestOpposite(t *testing.T) {
+	tests := []struct {
+		description string
+		team        string
+		expected    string
+		smash       bool
+	}{
+		{
+			description: "Opposite of G",
+			team:        "G",
+			expected:    "R",
+			smash:       false,
+		},
+		{
+			description: "Opposite of R",
+			team:        "R",
+			expected:    "G",
+			smash:       false,
+		},
+		{
+			description: "Turn again",
+			team:        "R",
+			expected:    "R",
+			smash:       true,
+		},
+		{
+			description: "Turn again",
+			team:        "G",
+			expected:    "G",
+			smash:       true,
+		},
+	}
+	result := ""
+	for _, test := range tests {
+		result = opposite(test.team, test.smash)
+		assert.Equal(t, result, test.expected, "Test case: %s", test.description)
+	}
+}
+func TestPossibleActions(t *testing.T) {
+	gameBoard := initialGameBoard
+	fmt.Print(gameBoard)
+	actions := possibleActions(gameBoard, gameBoard.CurrPlayer)
+	outcome := []gameboard.Action{
+		{Start: gameboard.Tuple{Row: 5, Column: 1}, End: gameboard.Tuple{Row: 4, Column: 0}},
+		{Start: gameboard.Tuple{Row: 5, Column: 1}, End: gameboard.Tuple{Row: 4, Column: 2}},
+		{Start: gameboard.Tuple{Row: 5, Column: 3}, End: gameboard.Tuple{Row: 4, Column: 2}},
+		{Start: gameboard.Tuple{Row: 5, Column: 3}, End: gameboard.Tuple{Row: 4, Column: 4}},
+		{Start: gameboard.Tuple{Row: 5, Column: 5}, End: gameboard.Tuple{Row: 4, Column: 4}},
+		{Start: gameboard.Tuple{Row: 5, Column: 5}, End: gameboard.Tuple{Row: 4, Column: 6}},
+		{Start: gameboard.Tuple{Row: 5, Column: 7}, End: gameboard.Tuple{Row: 4, Column: 6}}}
+	assert.Equal(t, actions, outcome, "Test case: %s", "possibleActions")
+	assert.NotEqual(t, actions, []gameboard.Action{}, "Test case: %s", "possibleActions")
+
+	fmt.Print(actions)
 }
 
 func generateTerminalBoard(team string) [][]gameboard.Piece {

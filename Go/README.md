@@ -47,3 +47,9 @@ go test
 cd ..
 
 ```
+
+
+
+go tool cover -func ./coverage.out
+
+go test ./...  -coverpkg=./... -coverprofile ./coverage.out
